@@ -22,10 +22,10 @@ impl LcfMapTree {
     pub(crate) fn from_body(input: &[u8]) -> crate::lcf::ParseResult<'_, Self> {
         let (input, (maps, order, active, start, ())) = (
             length_count(
-                crate::lcf::read_number,
+                crate::lcf::read_number_usize,
                 (crate::lcf::read_number, crate::lcf::parse_chunks),
             ),
-            length_count(crate::lcf::read_number, crate::lcf::read_number),
+            length_count(crate::lcf::read_number_usize, crate::lcf::read_number),
             crate::lcf::read_number,
             crate::lcf::parse_chunks,
             crate::lcf::check_empty,

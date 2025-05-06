@@ -22,7 +22,7 @@ impl ChipSet {
     pub fn from_chunks_2d(input: &[u8]) -> IResult<&[u8], Result<Vec<Self>, crate::Error>> {
         terminated(
             length_count(
-                crate::lcf::read_number,
+                crate::lcf::read_number_usize,
                 (crate::lcf::read_number, crate::lcf::parse_chunks)
                     .map(|(id, chunks)| Self::from_chunks(id as u16, &chunks)),
             )

@@ -9,11 +9,15 @@ readme = "README.md"
 keywords = ["rpgmaker2000", "r2k", "lcf"]
 categories = ["encoding"]
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
+derive_builder = "0.20"
 thiserror = "2.0"
 nom = "8.0"
-derive_builder = "0.20.2"
-log = "0.4.27"
+log = "0.4"
+wasm-bindgen = "0.2"
 
 [dependencies.serde]
 version = "1.0"

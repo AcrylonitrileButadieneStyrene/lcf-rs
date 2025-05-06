@@ -46,12 +46,15 @@ pub type ParseResult<'a, T> = nom::IResult<&'a [u8], Result<T, Error>>;
 pub type Chunk<'a> = (u64, &'a [u8]);
 
 pub fn read_header(input: &[u8]) -> nom::IResult<&[u8], &[u8]> {
-    length_data(read_number).parse(input)
+    length_data(read_number_usize).parse(input)
 }
 
 pub fn parse_chunks(input: &[u8]) -> nom::IResult<&[u8], Vec<crate::lcf::Chunk<'_>>> {
     terminated(
-        many0((verify(read_number, |id| *id != 0), length_data(read_number))),
+        many0((
+            verify(read_number, |id| *id != 0),
+            length_data(read_number_usize),
+        )),
         opt(tag(&[0u8] as &[u8])),
     )
     .parse(input)
@@ -76,6 +79,11 @@ pub fn read_number(input: &[u8]) -> nom::IResult<&[u8], u64> {
     }
 
     Ok((input, value))
+}
+
+pub fn read_number_usize(input: &[u8]) -> nom::IResult<&[u8], usize> {
+    let (input, value) = read_number(input)?;
+    Ok((input, value as usize))
 }
 
 #[test]
