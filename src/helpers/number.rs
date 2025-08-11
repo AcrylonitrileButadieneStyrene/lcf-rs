@@ -14,8 +14,6 @@ impl std::ops::Deref for Number {
     }
 }
 
-crate::endian!(Number, binrw::meta::EndianKind::None);
-
 impl binrw::BinRead for Number {
     type Args<'a> = ();
 

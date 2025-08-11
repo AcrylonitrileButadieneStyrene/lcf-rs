@@ -5,8 +5,6 @@ use crate::helpers::{Array, Chunk, Number, ToChunkID};
 #[derive(Debug)]
 pub struct LcfSaveData(pub Array<Chunk<LcfSaveDataChunk>>);
 
-crate::impl_rw!(LcfSaveData);
-
 #[binrw::binrw]
 #[derive(Clone, Debug)]
 #[brw(little)]

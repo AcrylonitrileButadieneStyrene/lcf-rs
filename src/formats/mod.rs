@@ -11,5 +11,3 @@ pub enum Lcf {
     MapUnit(crate::lmu::LcfMapUnit),
     SaveData(crate::lsd::LcfSaveData),
 }
-
-crate::impl_rw!(Lcf);

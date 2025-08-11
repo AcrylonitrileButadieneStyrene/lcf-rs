@@ -1,6 +1,5 @@
-#[macro_export]
 macro_rules! impl_rw {
-    ($name: ident) => {
+    ($name: ty) => {
         impl $name {
             pub fn read<R: std::io::Read + std::io::Seek>(
                 reader: &mut R,
@@ -18,8 +17,7 @@ macro_rules! impl_rw {
     };
 }
 
-#[macro_export]
-macro_rules! endian {
+macro_rules! impl_endian {
     ($($a:ident $(: $b:ident $(+ $c:ident)* )?),* ; $d:ty, $e:expr) => {
         impl<$($a $(: $b $(+ $c)* )?),*> binrw::meta::ReadEndian for $d {
             const ENDIAN: binrw::meta::EndianKind = $e;
@@ -39,3 +37,11 @@ macro_rules! endian {
         }
     };
 }
+
+impl_rw!(crate::Lcf);
+impl_rw!(crate::ldb::LcfDataBase);
+impl_rw!(crate::lmt::LcfMapTree);
+impl_rw!(crate::lmu::LcfMapUnit);
+impl_rw!(crate::lsd::LcfSaveData);
+impl_endian!(T; crate::helpers::Array<T>, binrw::meta::EndianKind::None);
+impl_endian!(crate::helpers::Number, binrw::meta::EndianKind::None);

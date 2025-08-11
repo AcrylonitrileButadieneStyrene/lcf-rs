@@ -25,5 +25,3 @@ pub struct LcfMapTree {
     pub active: Number,
     pub start: Array<Chunk<start::StartChunk>>,
 }
-
-crate::impl_rw!(LcfMapTree);

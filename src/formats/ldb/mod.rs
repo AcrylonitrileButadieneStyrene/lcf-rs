@@ -1,4 +1,4 @@
-use crate::helpers::{Chunk, Array, ToChunkID, Number};
+use crate::helpers::{Array, Chunk, Number, ToChunkID};
 
 pub mod chipset;
 
@@ -6,8 +6,6 @@ pub mod chipset;
 #[brw(magic(b"\x0bLcfDataBase"), little)]
 #[derive(Debug)]
 pub struct LcfDataBase(pub Array<Chunk<LcfDataBaseChunk>>);
-
-crate::impl_rw!(LcfDataBase);
 
 #[binrw::binrw]
 #[derive(Clone, Debug)]

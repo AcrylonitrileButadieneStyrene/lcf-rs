@@ -1,11 +1,9 @@
-use crate::helpers::{Chunk, Array, Number, ToChunkID};
+use crate::helpers::{Array, Chunk, Number, ToChunkID};
 
 #[binrw::binrw]
 #[brw(magic(b"\x0aLcfMapUnit"), little)]
 #[derive(Debug)]
 pub struct LcfMapUnit(pub Array<Chunk<LcfMapUnitChunk>>);
-
-crate::impl_rw!(LcfMapUnit);
 
 #[binrw::binrw]
 #[derive(Clone, Debug)]

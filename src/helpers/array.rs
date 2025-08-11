@@ -15,8 +15,6 @@ impl<T> std::ops::Deref for Array<T> {
     }
 }
 
-crate::endian!(T; Array<T>, binrw::meta::EndianKind::None);
-
 impl<T> binrw::BinRead for Array<T>
 where
     for<'a> T: binrw::BinRead<Args<'a>: Clone>,
