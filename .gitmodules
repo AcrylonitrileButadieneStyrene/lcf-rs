@@ -1,0 +1,3 @@
+[submodule "examples/lcf-explorer"]
+	path = examples/lcf-explorer
+	url = https://github.com/AcrylonitrileButadieneStyrene/lcf-explorer

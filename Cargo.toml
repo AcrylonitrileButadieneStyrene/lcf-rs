@@ -1,6 +1,14 @@
+[workspace]
+resolver = "3"
+members = ["examples/lcf-explorer"]
+package.exclude = ["examples/lcf-explorer"]
+
+[patch.crates-io]
+lcf = { path = "." }
+
 [package]
 name = "lcf"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "Bidirectional parser for the lcf file format used by RPG Maker 2000 games"
 repository = "https://github.com/AcrylonitrileButadieneStyrene/lcf-rs"
