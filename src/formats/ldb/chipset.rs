@@ -1,4 +1,4 @@
-use crate::helpers::{Chunk, Array, ToChunkID, Number};
+use crate::helpers::{Array, Chunk, Number, ToChunkID};
 
 #[binrw::binrw]
 #[derive(Clone, Debug)]

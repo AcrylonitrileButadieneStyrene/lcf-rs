@@ -1,7 +1,7 @@
-mod chunk;
 mod array;
+mod chunk;
 mod number;
 
-pub use chunk::{Chunk, ToChunkID};
 pub use array::Array;
+pub use chunk::{Chunk, ToChunkID};
 pub use number::Number;

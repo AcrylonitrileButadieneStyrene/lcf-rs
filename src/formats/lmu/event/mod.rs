@@ -1,5 +1,6 @@
 use crate::helpers::{Array, Chunk, Number, ToChunkID};
 
+pub mod command;
 pub mod instruction;
 pub mod move_route;
 pub mod page;

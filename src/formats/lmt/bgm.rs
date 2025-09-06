@@ -1,4 +1,4 @@
-use crate::helpers::{ToChunkID, Number};
+use crate::helpers::{Number, ToChunkID};
 
 #[binrw::binrw]
 #[br(import(id: Number, length: Number))]

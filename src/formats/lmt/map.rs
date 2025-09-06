@@ -1,5 +1,5 @@
 use crate::{
-    helpers::{Chunk, Array, ToChunkID, Number},
+    helpers::{Array, Chunk, Number, ToChunkID},
     lmt::bgm::MapBGM,
 };
 

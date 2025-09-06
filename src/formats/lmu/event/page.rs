@@ -3,9 +3,7 @@ use byteorder::{LittleEndian, ReadBytesExt as _, WriteBytesExt as _};
 
 use crate::{
     helpers::{Array, Chunk, Number, ToChunkID},
-    lmu::event::{
-        instruction::Instruction, move_route::EventMoveRouteChunk, trigger::EventTriggerChunk,
-    },
+    lmu::event::{command::Command, move_route::EventMoveRouteChunk, trigger::EventTriggerChunk},
 };
 
 #[binrw::binrw]
@@ -16,13 +14,13 @@ pub enum EventPageChunk {
     #[br(pre_assert(id.0 == 2))]
     TriggerTerm(Array<Chunk<EventTriggerChunk>>),
 
-    /// "If this element is empty event graphic will be upper ChipSet."
+    /// "If this element is empty event graphic will be upper `ChipSet`."
     /// - Type: string
     #[br(pre_assert(id.0 == 21))]
     GraphicFile(#[br(count = length.0)] Vec<u8>),
 
-    /// * When CharSet: 0 to 7
-    /// * When Upper ChipSet: 0 to 143
+    /// * When `CharSet`: 0 to 7
+    /// * When Upper `ChipSet`: 0 to 143
     #[br(pre_assert(id.0 == 22))]
     GraphicIndex(Number),
 
@@ -83,13 +81,13 @@ pub enum EventPageChunk {
     AnimationType(Number),
 
     #[br(pre_assert(id.0 == 51))]
-    InstructionsSize(Number),
+    CommandsSize(Number),
 
     #[br(pre_assert(id.0 == 52))]
-    Instructions(
+    Commands(
         #[br(parse_with = parse_instructions)]
         #[bw(write_with = write_instructions)]
-        Vec<Instruction>,
+        Vec<Command>,
     ),
 
     Unknown {
@@ -117,15 +115,15 @@ impl ToChunkID for EventPageChunk {
             Self::Priority(_) => 34,
             Self::PriorityForbidEventOverlap(_) => 35,
             Self::AnimationType(_) => 36,
-            Self::InstructionsSize(_) => 51,
-            Self::Instructions(_) => 52,
+            Self::CommandsSize(_) => 51,
+            Self::Commands(_) => 52,
             Self::Unknown { id, .. } => id.0,
         })
     }
 }
 
 #[binrw::parser(reader, endian)]
-fn parse_instructions() -> Result<Vec<Instruction>, binrw::Error> {
+fn parse_instructions() -> Result<Vec<Command>, binrw::Error> {
     let mut instructions = Vec::new();
     loop {
         let terminator = reader.read_u32::<LittleEndian>()?;
@@ -134,14 +132,14 @@ fn parse_instructions() -> Result<Vec<Instruction>, binrw::Error> {
         }
 
         reader.seek_relative(-4)?;
-        instructions.push(Instruction::read_options(reader, endian, ())?);
+        instructions.push(Command::read_options(reader, endian, ())?);
     }
 
     Ok(instructions)
 }
 
 #[binrw::writer(writer, endian)]
-fn write_instructions(instructions: &Vec<Instruction>) -> Result<(), binrw::Error> {
+fn write_instructions(instructions: &Vec<Command>) -> Result<(), binrw::Error> {
     for instruction in instructions {
         instruction.write_options(writer, endian, ())?;
     }
