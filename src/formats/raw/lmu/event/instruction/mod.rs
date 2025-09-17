@@ -5,8 +5,9 @@ mod event_target;
 pub use event_target::EventTarget;
 
 #[binrw::binrw]
-#[derive(Clone, Debug)]
-#[br(little, import(opcode: Number))]
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[br(import(opcode: Number))]
+#[brw(little)]
 pub enum Instruction {
     #[br(pre_assert(opcode.0 == 10))]
     End,

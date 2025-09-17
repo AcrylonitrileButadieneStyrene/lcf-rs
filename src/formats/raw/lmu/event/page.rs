@@ -3,11 +3,13 @@ use byteorder::{LittleEndian, ReadBytesExt as _, WriteBytesExt as _};
 
 use crate::{
     helpers::{Array, Chunk, Number, ToChunkID},
-    lmu::event::{command::Command, move_route::EventMoveRouteChunk, trigger::EventTriggerChunk},
+    raw::lmu::event::{
+        command::Command, move_route::EventMoveRouteChunk, trigger::EventTriggerChunk,
+    },
 };
 
 #[binrw::binrw]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[brw(little)]
 #[br(import(id: Number, length: Number))]
 pub enum EventPageChunk {

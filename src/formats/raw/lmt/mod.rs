@@ -7,7 +7,7 @@ pub mod start;
 #[binrw::binrw]
 #[brw(magic(b"\x0aLcfMapTree"), little)]
 #[derive(Debug)]
-pub struct LcfMapTree {
+pub struct RawLcfMapTree {
     #[br(temp)]
     #[bw(calc = Number(maps.len() as u32))]
     maps_count: Number,

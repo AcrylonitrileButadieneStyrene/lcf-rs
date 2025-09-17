@@ -118,3 +118,15 @@ mod tests {
         }
     }
 }
+
+impl From<u32> for Number {
+    fn from(value: u32) -> Self {
+        Self(value)
+    }
+}
+
+impl From<usize> for Number {
+    fn from(value: usize) -> Self {
+        Self(value as u32)
+    }
+}

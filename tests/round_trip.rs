@@ -1,28 +1,28 @@
 #[test]
 fn database_round_trip() {
     get_games().for_each(|game| {
-        round_trip::<lcf::ldb::LcfDataBase>(&game.join("RPG_RT.ldb"));
+        round_trip::<lcf::raw::ldb::RawLcfDataBase>(&game.join("RPG_RT.ldb"));
     });
 }
 
 #[test]
 fn map_tree_round_trip() {
     get_games().for_each(|game| {
-        round_trip::<lcf::lmt::LcfMapTree>(&game.join("RPG_RT.lmt"));
+        round_trip::<lcf::raw::lmt::RawLcfMapTree>(&game.join("RPG_RT.lmt"));
     });
 }
 
 #[test]
 fn map_unit_round_trip() {
     get_games().for_each(|game| {
-        round_trip::<lcf::lmu::LcfMapUnit>(&game.join(find_one(&game, "lmu")));
+        round_trip::<lcf::raw::lmu::RawLcfMapUnit>(&game.join(find_one(&game, "lmu")));
     });
 }
 
 #[test]
 fn save_data_round_trip() {
     get_games().for_each(|game| {
-        round_trip::<lcf::lsd::LcfSaveData>(&game.join(find_one(&game, "lsd")));
+        round_trip::<lcf::raw::lsd::RawLcfSaveData>(&game.join(find_one(&game, "lsd")));
     });
 }
 

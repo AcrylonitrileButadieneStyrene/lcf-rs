@@ -7,7 +7,7 @@ pub mod page;
 pub mod trigger;
 
 #[binrw::binrw]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[brw(little)]
 #[br(import(id: Number, length: Number))]
 pub enum EventChunk {

@@ -1,6 +1,6 @@
 use byteorder::ReadBytesExt as _;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Array<T> {
     pub inner_vec: Vec<T>,
     /// Decides if a null byte should be added after all of the data. r2k seems inconsistent with this.

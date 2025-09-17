@@ -1,10 +1,10 @@
 use crate::helpers::{Number, ToChunkID};
 
 #[binrw::binrw]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[brw(little)]
 #[br(import(id: Number, length: Number))]
-pub enum EventTriggerChunk {
+pub enum EventMoveRouteChunk {
     Unknown {
         #[br(calc = id)]
         #[bw(ignore)]
@@ -15,7 +15,7 @@ pub enum EventTriggerChunk {
     },
 }
 
-impl ToChunkID for EventTriggerChunk {
+impl ToChunkID for EventMoveRouteChunk {
     fn id(&self) -> Number {
         Number(match self {
             Self::Unknown { id, .. } => id.0,

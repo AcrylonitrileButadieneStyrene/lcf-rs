@@ -8,12 +8,12 @@ lcf = { path = "." }
 
 [package]
 name = "lcf"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "Bidirectional parser for the lcf file format used by RPG Maker 2000 games"
+readme = "README.md"
 repository = "https://github.com/AcrylonitrileButadieneStyrene/lcf-rs"
 license = "MIT OR Apache-2.0"
-readme = "README.md"
 keywords = ["rpgmaker2000", "r2k", "lcf"]
 categories = ["encoding"]
 
@@ -23,3 +23,5 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 binrw = "0.15.0"
 byteorder = "1.5.0"
+derive_builder = "0.20.2"
+thiserror = "2.0.16"

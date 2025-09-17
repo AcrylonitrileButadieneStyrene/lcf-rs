@@ -1,6 +1,6 @@
 use crate::helpers::Number;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum EventTarget {
     Player,
     Boat,

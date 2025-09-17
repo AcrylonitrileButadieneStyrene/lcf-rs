@@ -1,11 +1,11 @@
 use std::io::Seek as _;
 
-use crate::{helpers::Number, lmu::event::instruction::Instruction};
+use crate::{helpers::Number, raw::lmu::event::instruction::Instruction};
 use binrw::BinWrite as _;
 use byteorder::ReadBytesExt;
 
 #[binrw::binrw]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 #[brw(little)]
 pub struct Command {
     #[bw(calc = instruction.opcode())]
@@ -56,18 +56,17 @@ fn read_args_bytes(mut count: u32) -> Result<Vec<u8>, binrw::Error> {
     Ok(bytes)
 }
 
-#[binrw::writer(writer, endian)]
+#[binrw::writer(writer)]
 fn write_instruction(instruction: &Instruction) -> Result<(), binrw::Error> {
     let mut buf = std::io::Cursor::new(Vec::new());
-
-    instruction.write_options(&mut buf, binrw::Endian::Little, ())?;
+    instruction.write(&mut buf)?;
     buf.rewind()?;
 
     let args: Vec<Number> = binrw::helpers::until_eof(&mut buf, binrw::Endian::Little, ())?;
     let length = args.len();
 
-    buf.into_inner().write_options(writer, endian, ())?;
-    Number(length as u32).write_options(writer, endian, ())?;
+    Number(length as u32).write(writer)?;
+    buf.into_inner().write(writer)?;
 
     Ok(())
 }

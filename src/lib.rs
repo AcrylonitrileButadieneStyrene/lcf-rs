@@ -9,14 +9,23 @@
 //! Lcf is the file format used by the RPG Maker 2000/2003 game engine.
 //!
 //! Each of the different file types is in a module with its extension as the name:
-//! - [`ldb::LcfDataBase`] e.g. `RPG_RT.ldb`
-//! - [`lmt::LcfMapTree`] e.g. `RPG_RT.lmt`
-//! - [`lmu::LcfMapUnit`] e.g. `MapXXXX.lmu`
-//! - [`lsd::LcfSaveData`] e.g. `SaveXX.lsd`
+//! - [`crate::ldb::LcfDataBase`] e.g. `RPG_RT.ldb`
+//! - [`crate::lmt::LcfMapTree`] e.g. `RPG_RT.lmt`
+//! - [`crate::lmu::LcfMapUnit`] e.g. `MapXXXX.lmu`
+//! - [`crate::lsd::LcfSaveData`] e.g. `SaveXX.lsd`
 //!
-//! The [`Lcf`] enum contains all of the above 4 types as variants and can be used if the exact one is not known ahead of time.
+//! The [`crate::Lcf`] enum contains all of the above 4 types as variants and can be used if the exact one is not known ahead of time.
 //!
-//! Each of the above 5 types contains a [`read`](Lcf::read) and [`write`](Lcf::write) method, as well as the [`binrw::BinRead`] and [`binrw::BinWrite`] traits.
+//! ---
+//!
+//! The above 5 types are wrappers around their corresponding structs in the [`crate::raw`] module:
+//! - [`crate::raw::RawLcf`]
+//! - [`crate::raw::ldb::RawLcfDataBase`]
+//! - [`crate::raw::lmt::RawLcfMapTree`]
+//! - [`crate::raw::lmu::RawLcfMapUnit`]
+//! - [`crate::raw::lsd::RawLcfSaveData`]
+//!
+//! All of the raw structs implement [`binrw::BinRead`] and [`binrw::BinWrite`].
 //!
 //! ## Example
 //! ```no_run

@@ -1,6 +1,6 @@
 use crate::{
     helpers::{Array, Chunk, Number, ToChunkID},
-    lmt::bgm::MapBGM,
+    raw::lmt::bgm::MapBGM,
 };
 
 #[binrw::binrw]
