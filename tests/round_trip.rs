@@ -1,28 +1,28 @@
 #[test]
-fn database_round_trip() {
+fn raw_database_round_trip() {
     get_games().for_each(|game| {
-        round_trip::<lcf::raw::ldb::RawLcfDataBase>(&game.join("RPG_RT.ldb"));
+        raw_round_trip::<lcf::raw::ldb::RawLcfDataBase>(&game.join("RPG_RT.ldb"));
     });
 }
 
 #[test]
-fn map_tree_round_trip() {
+fn raw_map_tree_round_trip() {
     get_games().for_each(|game| {
-        round_trip::<lcf::raw::lmt::RawLcfMapTree>(&game.join("RPG_RT.lmt"));
+        raw_round_trip::<lcf::raw::lmt::RawLcfMapTree>(&game.join("RPG_RT.lmt"));
     });
 }
 
 #[test]
-fn map_unit_round_trip() {
+fn raw_map_unit_round_trip() {
     get_games().for_each(|game| {
-        round_trip::<lcf::raw::lmu::RawLcfMapUnit>(&game.join(find_one(&game, "lmu")));
+        raw_round_trip::<lcf::raw::lmu::RawLcfMapUnit>(&game.join(find_one(&game, "lmu")));
     });
 }
 
 #[test]
-fn save_data_round_trip() {
+fn raw_save_data_round_trip() {
     get_games().for_each(|game| {
-        round_trip::<lcf::raw::lsd::RawLcfSaveData>(&game.join(find_one(&game, "lsd")));
+        raw_round_trip::<lcf::raw::lsd::RawLcfSaveData>(&game.join(find_one(&game, "lsd")));
     });
 }
 
@@ -43,15 +43,15 @@ fn find_one(path: &std::path::Path, ext: &str) -> String {
         .unwrap()
 }
 
-fn round_trip<T>(path: &std::path::Path)
+fn raw_round_trip<T>(path: &std::path::Path)
 where
     for<'a> T: binrw::BinRead<Args<'a>: Default> + binrw::BinWrite<Args<'a>: Default>,
     T: binrw::meta::ReadEndian + binrw::meta::WriteEndian,
 {
     let bytes = std::fs::read(path).unwrap();
     let mut cursor = std::io::Cursor::new(bytes);
-    let database = T::read(&mut cursor).unwrap();
+    let data = T::read(&mut cursor).unwrap();
     let mut buffer = std::io::Cursor::new(Vec::new());
-    database.write(&mut buffer).unwrap();
+    data.write(&mut buffer).unwrap();
     assert_eq!(cursor.into_inner(), buffer.into_inner());
 }

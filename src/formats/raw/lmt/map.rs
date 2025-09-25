@@ -1,6 +1,6 @@
 use crate::{
     helpers::{Array, Chunk, Number, ToChunkID},
-    raw::lmt::bgm::MapBGM,
+    raw::lmt::bgm::MapBGMChunk,
 };
 
 #[binrw::binrw]
@@ -13,30 +13,31 @@ pub enum MapChunk {
     Name(#[br(count = length.0)] Vec<u8>),
     #[br(pre_assert(id.0 == 2))]
     Parent(Number),
-    // #[br(pre_assert(id.0 == 3))]
-    // UnidentifiedField3(VarNum),
+    #[br(pre_assert(id.0 == 3))]
+    Indentation(Number),
     #[br(pre_assert(id.0 == 4))]
     Type(Number),
     #[br(pre_assert(id.0 == 5))]
     HorizontalScrollBar(Number),
     #[br(pre_assert(id.0 == 6))]
     VerticalScrollBar(Number),
+    /// - Type: boolean
     #[br(pre_assert(id.0 == 7))]
-    ExtractedNode(Number),
+    Expanded(Number),
     /// * 0: Inherit
     /// * 1: Set by map event
     /// * 2: Preset
     #[br(pre_assert(id.0 == 11))]
     BGM(Number),
     #[br(pre_assert(id.0 == 12))]
-    BGMData(Array<Chunk<MapBGM>>),
+    BGMData(Array<Chunk<MapBGMChunk>>),
     /// * 0: Inherit
     /// * 1: Set by map event
     /// * 2: Preset
     #[br(pre_assert(id.0 == 21))]
-    Backdrop(Number),
+    Background(Number),
     #[br(pre_assert(id.0 == 22))]
-    BackdropFile(#[br(count = length.0)] Vec<u8>),
+    BackgroundFile(#[br(count = length.0)] Vec<u8>),
     /// * 0: Inherit
     /// * 1: Set by map event
     /// * 2: Preset
@@ -75,14 +76,15 @@ impl ToChunkID for MapChunk {
         Number(match self {
             Self::Name(_) => 1,
             Self::Parent(_) => 2,
+            Self::Indentation(_) => 3,
             Self::Type(_) => 4,
             Self::HorizontalScrollBar(_) => 5,
             Self::VerticalScrollBar(_) => 6,
-            Self::ExtractedNode(_) => 7,
+            Self::Expanded(_) => 7,
             Self::BGM(_) => 11,
             Self::BGMData(_) => 12,
-            Self::Backdrop(_) => 21,
-            Self::BackdropFile(_) => 22,
+            Self::Background(_) => 21,
+            Self::BackgroundFile(_) => 22,
             Self::Teleport(_) => 31,
             Self::Escape(_) => 32,
             Self::Save(_) => 33,

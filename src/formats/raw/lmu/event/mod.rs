@@ -1,10 +1,11 @@
 use crate::helpers::{Array, Chunk, Number, ToChunkID};
 
 pub mod command;
+pub mod commands;
 pub mod instruction;
 pub mod move_route;
 pub mod page;
-pub mod trigger;
+pub mod condition;
 
 #[binrw::binrw]
 #[derive(Clone, Debug, PartialEq, Eq)]

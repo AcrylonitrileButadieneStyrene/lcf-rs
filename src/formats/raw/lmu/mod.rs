@@ -4,7 +4,7 @@ pub mod event;
 
 #[binrw::binrw]
 #[brw(magic(b"\x0aLcfMapUnit"), little)]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RawLcfMapUnit(pub Array<Chunk<LcfMapUnitChunk>>);
 
 #[binrw::binrw]

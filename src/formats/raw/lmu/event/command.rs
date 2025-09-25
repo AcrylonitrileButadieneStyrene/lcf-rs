@@ -1,16 +1,24 @@
 use std::io::Seek as _;
 
-use crate::{helpers::Number, raw::lmu::event::instruction::Instruction};
 use binrw::BinWrite as _;
-use byteorder::ReadBytesExt;
+
+use crate::{helpers::Number, raw::lmu::event::instruction::Instruction};
 
 #[binrw::binrw]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[brw(little)]
 pub struct Command {
-    #[bw(calc = instruction.opcode())]
+    #[br(temp)]
+    #[bw(calc = Number(instruction.opcode()))]
     opcode: Number,
-    pub indent: Number,
+
+    #[br(temp)]
+    #[bw(calc = Number(*indent))]
+    __indent: Number,
+
+    #[br(calc = __indent.0)]
+    #[bw(ignore)]
+    pub indent: u32,
 
     #[bw(calc = Number(string.len() as u32))]
     string_length: Number,
@@ -18,55 +26,53 @@ pub struct Command {
     #[br(count = string_length.0)]
     pub string: Vec<u8>,
 
+    #[br(temp)]
     #[bw(ignore)]
     arg_count: Number,
 
-    #[br(parse_with = read_args_bytes, args(arg_count.0))]
+    #[br(temp, count = arg_count.0)]
     #[bw(ignore)]
-    args_bytes: Vec<u8>,
+    args: Vec<Number>,
 
     #[br(calc = {
-        let mut cursor = std::io::Cursor::new(&args_bytes);
-        let result = Instruction::read_args(&mut cursor, (opcode,))?;
-        if cursor.position() < cursor.get_ref().len() as u64 {
-            cursor.seek(std::io::SeekFrom::Start(0))?;
-            let args = binrw::helpers::until_eof(&mut cursor, binrw::Endian::Little, ())?;
-            Instruction::Unknown { opcode, args }
+        let mut cursor = std::io::Cursor::new(
+            args.iter()
+                .flat_map(|arg| arg.0.to_ne_bytes())
+                .collect::<Vec<u8>>(),
+        );
+        if let Ok(instruction) = Instruction::read_args(&mut cursor, (opcode.0,))
+            && cursor.position() >= cursor.get_ref().len() as u64
+        {
+            instruction
         } else {
-            result
+            cursor.seek(std::io::SeekFrom::Start(0))?;
+            Instruction::Unknown {
+                opcode: opcode.0,
+                args: args.iter().map(|arg| arg.0).collect(),
+            }
         }
     })]
     #[bw(write_with = write_instruction)]
     pub instruction: Instruction,
 }
 
-#[binrw::parser(reader)]
-fn read_args_bytes(mut count: u32) -> Result<Vec<u8>, binrw::Error> {
-    let mut bytes = Vec::with_capacity(count as usize * 5);
-
-    while count > 0 {
-        let byte = reader.read_u8()?;
-        if byte & 0b1000_0000 == 0 {
-            count -= 1;
-        }
-
-        bytes.push(byte);
-    }
-
-    Ok(bytes)
-}
-
 #[binrw::writer(writer)]
 fn write_instruction(instruction: &Instruction) -> Result<(), binrw::Error> {
     let mut buf = std::io::Cursor::new(Vec::new());
     instruction.write(&mut buf)?;
-    buf.rewind()?;
+    let nums: Vec<u32> = buf
+        .into_inner()
+        .into_iter()
+        .array_chunks()
+        .map(u32::from_ne_bytes)
+        .collect();
 
-    let args: Vec<Number> = binrw::helpers::until_eof(&mut buf, binrw::Endian::Little, ())?;
-    let length = args.len();
-
-    Number(length as u32).write(writer)?;
-    buf.into_inner().write(writer)?;
+    Number(nums.len() as u32).write(writer)?;
+    nums.iter()
+        .copied()
+        .map(Number)
+        .collect::<Vec<Number>>()
+        .write(writer)?;
 
     Ok(())
 }

@@ -1,74 +1,72 @@
-use crate::helpers::Number;
-
 mod event_target;
 
 pub use event_target::EventTarget;
 
 #[binrw::binrw]
-#[derive(Clone, Debug, PartialEq, Eq)]
-#[br(import(opcode: Number))]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[br(import(opcode: u32))]
 #[brw(little)]
 pub enum Instruction {
-    #[br(pre_assert(opcode.0 == 10))]
+    #[br(pre_assert(opcode == 10))]
     End,
-    #[br(pre_assert(opcode.0 == 1005))]
+    #[br(pre_assert(opcode == 1005))]
     CallCommonEvent, // TODO
-    #[br(pre_assert(opcode.0 == 1006))]
+    #[br(pre_assert(opcode == 1006))]
     ForceFlee, // TODO
-    #[br(pre_assert(opcode.0 == 1007))]
+    #[br(pre_assert(opcode == 1007))]
     EnableCombo, // TODO
-    #[br(pre_assert(opcode.0 == 1008))]
+    #[br(pre_assert(opcode == 1008))]
     ChangeClass, // TODO
-    #[br(pre_assert(opcode.0 == 1009))]
+    #[br(pre_assert(opcode == 1009))]
     ChangeBattleCommands, // TODO
-    #[br(pre_assert(opcode.0 == 5001))]
+    #[br(pre_assert(opcode == 5001))]
     OpenLoadMenu, // TODO
-    #[br(pre_assert(opcode.0 == 5002))]
+    #[br(pre_assert(opcode == 5002))]
     ExitGame, // TODO
-    #[br(pre_assert(opcode.0 == 5003))]
+    #[br(pre_assert(opcode == 5003))]
     ToggleAtbMode, // TODO
-    #[br(pre_assert(opcode.0 == 5004))]
+    #[br(pre_assert(opcode == 5004))]
     ToggleFullscreen, // TODO
-    #[br(pre_assert(opcode.0 == 5005))]
+    #[br(pre_assert(opcode == 5005))]
     OpenVideoOptions, // TODO
-    #[br(pre_assert(opcode.0 == 10110))]
+    #[br(pre_assert(opcode == 10110))]
     ShowMessage, // TODO
-    #[br(pre_assert(opcode.0 == 10120))]
+    #[br(pre_assert(opcode == 10120))]
     MessageOptions, // TODO
-    #[br(pre_assert(opcode.0 == 10130))]
+    #[br(pre_assert(opcode == 10130))]
     ChangeFaceGraphic, // TODO
-    #[br(pre_assert(opcode.0 == 10140))]
+    #[br(pre_assert(opcode == 10140))]
     ShowChoice, // TODO
-    #[br(pre_assert(opcode.0 == 10150))]
+    #[br(pre_assert(opcode == 10150))]
     InputNumber, // TODO
-    #[br(pre_assert(opcode.0 == 10210))]
+    #[br(pre_assert(opcode == 10210))]
     ControlSwitches {
         /// - 0: Single
         /// - 1: Batch
         /// - 2: Variable
-        mode: Number,
-        start: Number,
-        end: Number,
+        mode: u32,
+        start: u32,
+        end: u32,
         /// - 0: Set true
         /// - 1: Set false
         /// - 2: Invert
-        operation: Number,
+        operation: u32,
     },
-    #[br(pre_assert(opcode.0 == 10220))]
+    #[br(pre_assert(opcode == 10220))]
     ControlVariables {
         /// - 0: Single
         /// - 1: Batch
         /// - 2: Variable
-        mode: Number,
-        start: Number,
-        end: Number,
+        mode: u32,
+        start: u32,
+        end: u32,
         /// - 0: Set
         /// - 1: Addition
         /// - 2: Subtract
         /// - 3: Multiply
         /// - 4: Divide
         /// - 5: Modulus
-        operation: Number,
+        operation: u32,
         /// - 0: Constant value
         /// - 1: Variable
         /// - 2: Variable ID
@@ -77,7 +75,7 @@ pub enum Instruction {
         /// - 5: Player
         /// - 6: Event
         /// - 7: Other
-        operand: Number,
+        operand: u32,
         /// - Random: minimum value (included in sampled values)
         /// - Other:
         ///   - 0: Money
@@ -89,7 +87,7 @@ pub enum Instruction {
         ///   - 6: Loss count
         ///   - 7: Escape count
         ///   - 8: MIDI progress?
-        value1: Number,
+        value1: u32,
         /// - Random: maximum value (not included in sampled values)
         /// - Item: bool
         /// - Player:
@@ -115,53 +113,53 @@ pub enum Instruction {
         ///   - 0: Direction
         ///   - 0: Screen X
         ///   - 0: Screen Y
-        value2: Number,
+        value2: u32,
     },
-    #[br(pre_assert(opcode.0 == 10230))]
+    #[br(pre_assert(opcode == 10230))]
     TimerOperation, // TODO
-    #[br(pre_assert(opcode.0 == 10310))]
+    #[br(pre_assert(opcode == 10310))]
     ChangeGold, // TODO
-    #[br(pre_assert(opcode.0 == 10320))]
+    #[br(pre_assert(opcode == 10320))]
     ChangeItems, // TODO
-    #[br(pre_assert(opcode.0 == 10330))]
+    #[br(pre_assert(opcode == 10330))]
     ChangePartyMembers, // TODO
-    #[br(pre_assert(opcode.0 == 10410))]
+    #[br(pre_assert(opcode == 10410))]
     ChangeExp, // TODO
-    #[br(pre_assert(opcode.0 == 10420))]
+    #[br(pre_assert(opcode == 10420))]
     ChangeLevel, // TODO
-    #[br(pre_assert(opcode.0 == 10430))]
+    #[br(pre_assert(opcode == 10430))]
     ChangeParameters, // TODO
-    #[br(pre_assert(opcode.0 == 10440))]
+    #[br(pre_assert(opcode == 10440))]
     ChangeSkills, // TODO
-    #[br(pre_assert(opcode.0 == 10450))]
+    #[br(pre_assert(opcode == 10450))]
     ChangeEquipment, // TODO
-    #[br(pre_assert(opcode.0 == 10460))]
+    #[br(pre_assert(opcode == 10460))]
     ChangeHP, // TODO
-    #[br(pre_assert(opcode.0 == 10470))]
+    #[br(pre_assert(opcode == 10470))]
     ChangeSP, // TODO
-    #[br(pre_assert(opcode.0 == 10480))]
+    #[br(pre_assert(opcode == 10480))]
     ChangeCondition, // TODO
-    #[br(pre_assert(opcode.0 == 10490))]
+    #[br(pre_assert(opcode == 10490))]
     FullHeal, // TODO
-    #[br(pre_assert(opcode.0 == 10500))]
+    #[br(pre_assert(opcode == 10500))]
     SimulatedAttack, // TODO
-    #[br(pre_assert(opcode.0 == 10610))]
+    #[br(pre_assert(opcode == 10610))]
     ChangeHeroName, // TODO
-    #[br(pre_assert(opcode.0 == 10620))]
+    #[br(pre_assert(opcode == 10620))]
     ChangeHeroTitle, // TODO
-    #[br(pre_assert(opcode.0 == 10630))]
+    #[br(pre_assert(opcode == 10630))]
     ChangeSpriteAssociation, // TODO
-    #[br(pre_assert(opcode.0 == 10640))]
+    #[br(pre_assert(opcode == 10640))]
     ChangeActorFace, // TODO
-    #[br(pre_assert(opcode.0 == 10650))]
+    #[br(pre_assert(opcode == 10650))]
     ChangeVehicleGraphic, // TODO
-    #[br(pre_assert(opcode.0 == 10660))]
+    #[br(pre_assert(opcode == 10660))]
     ChangeSystemBGM, // TODO
-    #[br(pre_assert(opcode.0 == 10670))]
+    #[br(pre_assert(opcode == 10670))]
     ChangeSystemSFX, // TODO
-    #[br(pre_assert(opcode.0 == 10680))]
+    #[br(pre_assert(opcode == 10680))]
     ChangeSystemGraphics, // TODO
-    #[br(pre_assert(opcode.0 == 10690))]
+    #[br(pre_assert(opcode == 10690))]
     ChangeScreenTransitions {
         /// - 0: Hide player
         /// - 1: Show player
@@ -169,7 +167,7 @@ pub enum Instruction {
         /// - 3: Show for battle start
         /// - 4: Hide for battle end
         /// - 5: Show for battle end
-        mode: Number,
+        mode: u32,
         /// - 0: Fade out/in screen
         /// - 1: Random blocks across screen
         /// - 2: Random blocks from above
@@ -191,227 +189,227 @@ pub enum Instruction {
         /// - 18: Raster scroll
         /// - 19: Cut out/in
         /// - 20: Instantaneous/(not an option)
-        value: Number,
+        value: u32,
     },
-    #[br(pre_assert(opcode.0 == 10710))]
+    #[br(pre_assert(opcode == 10710))]
     EnemyEncounter, // TODO
-    #[br(pre_assert(opcode.0 == 10720))]
+    #[br(pre_assert(opcode == 10720))]
     OpenShop, // TODO
-    #[br(pre_assert(opcode.0 == 10730))]
+    #[br(pre_assert(opcode == 10730))]
     ShowInn, // TODO
-    #[br(pre_assert(opcode.0 == 10740))]
+    #[br(pre_assert(opcode == 10740))]
     EnterHeroName, // TODO
-    #[br(pre_assert(opcode.0 == 10810))]
+    #[br(pre_assert(opcode == 10810))]
     TransferPlayer {
         /// If the map ID here is the same as the current map ID, then the map will not be reloaded.
         /// To reload the map, teleport to a different map and immediately teleport back. Deferring not necessary.
-        map: Number,
-        x: Number,
-        y: Number,
+        map: u32,
+        x: u32,
+        y: u32,
     },
-    #[br(pre_assert(opcode.0 == 10820))]
+    #[br(pre_assert(opcode == 10820))]
     MemorizeLocation, // TODO
-    #[br(pre_assert(opcode.0 == 10830))]
+    #[br(pre_assert(opcode == 10830))]
     RecallToLocation, // TODO
-    #[br(pre_assert(opcode.0 == 10840))]
+    #[br(pre_assert(opcode == 10840))]
     EnterExitVehicle, // TODO
-    #[br(pre_assert(opcode.0 == 10850))]
+    #[br(pre_assert(opcode == 10850))]
     SetVehicleLocation, // TODO
-    #[br(pre_assert(opcode.0 == 10860))]
+    #[br(pre_assert(opcode == 10860))]
     SetEventLocation {
         source: EventTarget,
         /// - 0: Constant
         /// - 1: Variable
-        mode: Number,
-        x_pos: Number,
-        y_pos: Number,
+        mode: u32,
+        x_pos: u32,
+        y_pos: u32,
     },
-    #[br(pre_assert(opcode.0 == 10870))]
+    #[br(pre_assert(opcode == 10870))]
     TradeEventLocations, // TODO
-    #[br(pre_assert(opcode.0 == 10910))]
+    #[br(pre_assert(opcode == 10910))]
     StoreTerrainID, // TODO
-    #[br(pre_assert(opcode.0 == 10920))]
+    #[br(pre_assert(opcode == 10920))]
     GetEventLocation {
         /// - 0: Constant
         /// - 1: Variable
-        mode: Number,
-        x: Number,
-        y: Number,
-        output: Number,
+        mode: u32,
+        x: u32,
+        y: u32,
+        output: u32,
     },
-    #[br(pre_assert(opcode.0 == 11010))]
+    #[br(pre_assert(opcode == 11010))]
     HideScreen {
         /// - [`u32::MAX`][]: Default
-        mode: Number,
+        mode: u32,
     },
-    #[br(pre_assert(opcode.0 == 11020))]
+    #[br(pre_assert(opcode == 11020))]
     ShowScreen {
         /// - [`u32::MAX`][]: Default
-        mode: Number,
+        mode: u32,
     },
-    #[br(pre_assert(opcode.0 == 11030))]
+    #[br(pre_assert(opcode == 11030))]
     TintScreen {
         /// - Type: percentage
         /// - Range: 0-200
-        red: Number,
+        red: u32,
         /// - Type: percentage
         /// - Range: 0-200
-        green: Number,
+        green: u32,
         /// - Type: percentage
         /// - Range: 0-200
-        blue: Number,
+        blue: u32,
         /// - Type: percentage
         /// - Range: 0-200
-        saturation: Number,
-        deciseconds: Number,
-        wait_for_completion: Number,
+        saturation: u32,
+        deciseconds: u32,
+        wait_for_completion: u32,
     },
-    #[br(pre_assert(opcode.0 == 11040))]
+    #[br(pre_assert(opcode == 11040))]
     FlashScreen {
-        red: Number,
-        green: Number,
-        blue: Number,
-        value: Number,
-        deciseconds: Number,
-        wait_for_completion: Number,
+        red: u32,
+        green: u32,
+        blue: u32,
+        value: u32,
+        deciseconds: u32,
+        wait_for_completion: u32,
     },
-    #[br(pre_assert(opcode.0 == 11050))]
+    #[br(pre_assert(opcode == 11050))]
     ShakeScreen {
         /// Range: 1-9. 5 = Normal
-        power: Number,
+        power: u32,
         /// Range: 1-9. 5 = Normal
-        speed: Number,
-        deciseconds: Number,
-        wait_for_completion: Number,
+        speed: u32,
+        deciseconds: u32,
+        wait_for_completion: u32,
     },
-    #[br(pre_assert(opcode.0 == 11060))]
+    #[br(pre_assert(opcode == 11060))]
     ScrollMap {
         /// 0: Fix
         /// 1: Unfix
         /// 2: Shift position
         /// 3: Return to origin
-        mode: Number,
+        mode: u32,
         // 0: Up
         // 1: Left
         // 2: Right
         // 3: Down
-        direction: Number,
-        distance: Number,
-        speed: Number,
-        wait_for_completion: Number,
+        direction: u32,
+        distance: u32,
+        speed: u32,
+        wait_for_completion: u32,
     },
-    #[br(pre_assert(opcode.0 == 11070))]
+    #[br(pre_assert(opcode == 11070))]
     WeatherEffects, // TODO
-    #[br(pre_assert(opcode.0 == 11110))]
+    #[br(pre_assert(opcode == 11110))]
     ShowPicture, // TODO
-    #[br(pre_assert(opcode.0 == 11120))]
+    #[br(pre_assert(opcode == 11120))]
     MovePicture, // TODO
-    #[br(pre_assert(opcode.0 == 11130))]
+    #[br(pre_assert(opcode == 11130))]
     ErasePicture, // TODO
-    #[br(pre_assert(opcode.0 == 11210))]
+    #[br(pre_assert(opcode == 11210))]
     ShowBattleAnimation, // TODO
-    #[br(pre_assert(opcode.0 == 11310))]
+    #[br(pre_assert(opcode == 11310))]
     PlayerVisibility, // TODO
-    #[br(pre_assert(opcode.0 == 11320))]
+    #[br(pre_assert(opcode == 11320))]
     FlashSprite, // TODO
-    #[br(pre_assert(opcode.0 == 11330))]
+    #[br(pre_assert(opcode == 11330))]
     MoveEvent {
         // TODO
         target: EventTarget,
-        frequency: Number,
+        frequency: u32,
         #[br(parse_with = binrw::helpers::until_eof)]
-        rest: Vec<Number>,
+        rest: Vec<u32>,
     },
-    #[br(pre_assert(opcode.0 == 11340))]
+    #[br(pre_assert(opcode == 11340))]
     WaitForAllMovement, // TODO
-    #[br(pre_assert(opcode.0 == 11350))]
+    #[br(pre_assert(opcode == 11350))]
     HaltAllMovement, // TODO
-    #[br(pre_assert(opcode.0 == 11410))]
-    Wait { deciseconds: Number },
+    #[br(pre_assert(opcode == 11410))]
+    Wait { deciseconds: u32 },
 
-    #[br(pre_assert(opcode.0 == 11510))]
+    #[br(pre_assert(opcode == 11510))]
     PlayBGM, // TODO
-    #[br(pre_assert(opcode.0 == 11520))]
-    FadeOutBGM { seconds: Number },
-    #[br(pre_assert(opcode.0 == 11530))]
+    #[br(pre_assert(opcode == 11520))]
+    FadeOutBGM { seconds: u32 },
+    #[br(pre_assert(opcode == 11530))]
     MemorizeBGM, // TODO
-    #[br(pre_assert(opcode.0 == 11540))]
+    #[br(pre_assert(opcode == 11540))]
     PlayMemorizedBGM, // TODO
-    #[br(pre_assert(opcode.0 == 11550))]
+    #[br(pre_assert(opcode == 11550))]
     PlaySoundEffect {
         /// - Unit: percentage
         /// - Range: 0-100.
-        volume: Number,
+        volume: u32,
         /// - Unit: percentage
         /// - Range: 50-150
-        tempo: Number,
+        tempo: u32,
         /// - Range: 0-100. 0 = left, 50 = middle, 100 = right.
-        balance: Number,
+        balance: u32,
     },
-    #[br(pre_assert(opcode.0 == 11560))]
+    #[br(pre_assert(opcode == 11560))]
     PlayMovie, // TODO
-    #[br(pre_assert(opcode.0 == 11610))]
+    #[br(pre_assert(opcode == 11610))]
     KeyInputProcessing {
         /// Output variable. Expect this variable to be completely trashed and unusable for other purposes.
-        output: Number,
+        output: u32,
         /// - Type: Bool
         /// If true event processing will pause until the animation is complete
-        wait_for_confirmation: Number,
+        wait_for_confirmation: u32,
         /// Appears to be unused in r2k.
-        unknown: Number,
+        unknown: u32,
         /// Space/Z/Enter
-        decision: Number,
+        decision: u32,
         /// Escape/X/C/V/B/N/Kp0
-        cancel: Number,
-        shift: Number,
-        down: Number,
-        left: Number,
-        right: Number,
-        up: Number,
+        cancel: u32,
+        shift: u32,
+        down: u32,
+        left: u32,
+        right: u32,
+        up: u32,
     },
-    #[br(pre_assert(opcode.0 == 11710))]
+    #[br(pre_assert(opcode == 11710))]
     ChangeMapTileset, // TODO
-    #[br(pre_assert(opcode.0 == 11720))]
+    #[br(pre_assert(opcode == 11720))]
     ChangePBG, // TODO
-    #[br(pre_assert(opcode.0 == 11740))]
+    #[br(pre_assert(opcode == 11740))]
     ChangeEncounterSteps, // TODO
-    #[br(pre_assert(opcode.0 == 11750))]
+    #[br(pre_assert(opcode == 11750))]
     ChangeTile {
-        is_upper: Number,
+        is_upper: u32,
         /// 0-based but shows as 1-based in the editor.
-        from: Number,
+        from: u32,
         /// 0-based but shows as 1-based in the editor.
-        to: Number,
+        to: u32,
     },
-    #[br(pre_assert(opcode.0 == 11810))]
+    #[br(pre_assert(opcode == 11810))]
     TeleportTargets, // TODO
-    #[br(pre_assert(opcode.0 == 11820))]
+    #[br(pre_assert(opcode == 11820))]
     ChangeTeleportAccess, // TODO
-    #[br(pre_assert(opcode.0 == 11830))]
+    #[br(pre_assert(opcode == 11830))]
     EscapeTarget, // TODO
-    #[br(pre_assert(opcode.0 == 11840))]
+    #[br(pre_assert(opcode == 11840))]
     ChangeEscapeAccess, // TODO
-    #[br(pre_assert(opcode.0 == 11910))]
+    #[br(pre_assert(opcode == 11910))]
     OpenSaveMenu, // TODO
-    #[br(pre_assert(opcode.0 == 11930))]
+    #[br(pre_assert(opcode == 11930))]
     ChangeSaveAccess, // TODO
-    #[br(pre_assert(opcode.0 == 11950))]
+    #[br(pre_assert(opcode == 11950))]
     OpenMainMenu, // TODO
-    #[br(pre_assert(opcode.0 == 11960))]
+    #[br(pre_assert(opcode == 11960))]
     ChangeMainMenuAccess, // TODO
-    #[br(pre_assert(opcode.0 == 12010))]
+    #[br(pre_assert(opcode == 12010))]
     ConditionalBranch {
         /// 0: Switch
         /// 1: Variable
-        mode: Number,
-        index: Number,
+        mode: u32,
+        index: u32,
         /// - Facing:
         ///   - 0: Up
         ///   - 1: Right
         ///   - 2: Down
         ///   - 3: Left
-        operator1: Number, // TODO
-        value: Number,
+        operator1: u32, // TODO
+        value: u32,
         /// - Variable:
         ///   - 0: ==
         ///   - 1: >=
@@ -419,108 +417,108 @@ pub enum Instruction {
         ///   - 3: >
         ///   - 4: <
         ///   - 5: !=
-        operator2: Number, // TODO
-        has_else: Number,
+        operator2: u32, // TODO
+        has_else: u32,
     },
 
-    #[br(pre_assert(opcode.0 == 12110))]
+    #[br(pre_assert(opcode == 12110))]
     Label, // TODO
-    #[br(pre_assert(opcode.0 == 12120))]
+    #[br(pre_assert(opcode == 12120))]
     JumpToLabel, // TODO
-    #[br(pre_assert(opcode.0 == 12210))]
+    #[br(pre_assert(opcode == 12210))]
     Loop, // TODO
-    #[br(pre_assert(opcode.0 == 12220))]
+    #[br(pre_assert(opcode == 12220))]
     BreakLoop, // TODO
-    #[br(pre_assert(opcode.0 == 12310))]
+    #[br(pre_assert(opcode == 12310))]
     EndEventProcessing,
-    #[br(pre_assert(opcode.0 == 12320))]
+    #[br(pre_assert(opcode == 12320))]
     EraseEvent,
-    #[br(pre_assert(opcode.0 == 12330))]
+    #[br(pre_assert(opcode == 12330))]
     CallEvent {
         /// 0: Common event
         /// 1: Map event (constant)
         /// 2: Map event (variable)
-        mode: Number,
-        index: Number,
-        page: Number,
+        mode: u32,
+        index: u32,
+        page: u32,
     },
 
-    #[br(pre_assert(opcode.0 == 12410))]
+    #[br(pre_assert(opcode == 12410))]
     Comment, // TODO
-    #[br(pre_assert(opcode.0 == 12420))]
+    #[br(pre_assert(opcode == 12420))]
     GameOver, // TODO
-    #[br(pre_assert(opcode.0 == 12510))]
+    #[br(pre_assert(opcode == 12510))]
     ReturntoTitleScreen, // TODO
-    #[br(pre_assert(opcode.0 == 13110))]
+    #[br(pre_assert(opcode == 13110))]
     ChangeMonsterHP, // TODO
-    #[br(pre_assert(opcode.0 == 13120))]
+    #[br(pre_assert(opcode == 13120))]
     ChangeMonsterMP, // TODO
-    #[br(pre_assert(opcode.0 == 13130))]
+    #[br(pre_assert(opcode == 13130))]
     ChangeMonsterCondition, // TODO
-    #[br(pre_assert(opcode.0 == 13150))]
+    #[br(pre_assert(opcode == 13150))]
     ShowHiddenMonster, // TODO
-    #[br(pre_assert(opcode.0 == 13210))]
+    #[br(pre_assert(opcode == 13210))]
     ChangeBattleBG, // TODO
-    #[br(pre_assert(opcode.0 == 13260))]
+    #[br(pre_assert(opcode == 13260))]
     ShowBattleAnimationB, // TODO
-    #[br(pre_assert(opcode.0 == 13310))]
+    #[br(pre_assert(opcode == 13310))]
     ConditionalBranchB, // TODO
-    #[br(pre_assert(opcode.0 == 13410))]
+    #[br(pre_assert(opcode == 13410))]
     TerminateBattle, // TODO
-    #[br(pre_assert(opcode.0 == 20110))]
+    #[br(pre_assert(opcode == 20110))]
     ShowMessage2, // TODO
-    #[br(pre_assert(opcode.0 == 20140))]
+    #[br(pre_assert(opcode == 20140))]
     ShowChoiceOption, // TODO
-    #[br(pre_assert(opcode.0 == 20141))]
+    #[br(pre_assert(opcode == 20141))]
     ShowChoiceEnd, // TODO
-    #[br(pre_assert(opcode.0 == 20710))]
+    #[br(pre_assert(opcode == 20710))]
     VictoryHandler, // TODO
-    #[br(pre_assert(opcode.0 == 20711))]
+    #[br(pre_assert(opcode == 20711))]
     EscapeHandler, // TODO
-    #[br(pre_assert(opcode.0 == 20712))]
+    #[br(pre_assert(opcode == 20712))]
     DefeatHandler, // TODO
-    #[br(pre_assert(opcode.0 == 20713))]
+    #[br(pre_assert(opcode == 20713))]
     EndBattle, // TODO
-    #[br(pre_assert(opcode.0 == 20720))]
+    #[br(pre_assert(opcode == 20720))]
     Transaction, // TODO
-    #[br(pre_assert(opcode.0 == 20721))]
+    #[br(pre_assert(opcode == 20721))]
     NoTransaction, // TODO
-    #[br(pre_assert(opcode.0 == 20722))]
+    #[br(pre_assert(opcode == 20722))]
     EndShop, // TODO
-    #[br(pre_assert(opcode.0 == 20730))]
+    #[br(pre_assert(opcode == 20730))]
     Stay, // TODO
-    #[br(pre_assert(opcode.0 == 20731))]
+    #[br(pre_assert(opcode == 20731))]
     NoStay, // TODO
-    #[br(pre_assert(opcode.0 == 20732))]
+    #[br(pre_assert(opcode == 20732))]
     EndInn, // TODO
-    #[br(pre_assert(opcode.0 == 22010))]
+    #[br(pre_assert(opcode == 22010))]
     ElseBranch,
-    #[br(pre_assert(opcode.0 == 22011))]
+    #[br(pre_assert(opcode == 22011))]
     EndBranch,
-    #[br(pre_assert(opcode.0 == 22210))]
+    #[br(pre_assert(opcode == 22210))]
     EndLoop, // TODO
-    #[br(pre_assert(opcode.0 == 22410))]
+    #[br(pre_assert(opcode == 22410))]
     CommentNextLine, // TODO
-    #[br(pre_assert(opcode.0 == 23310))]
+    #[br(pre_assert(opcode == 23310))]
     ElseBranchB, // TODO
-    #[br(pre_assert(opcode.0 == 23311))]
+    #[br(pre_assert(opcode == 23311))]
     EndBranchB, // TODO
 
     Unknown {
         #[br(calc = opcode)]
         #[bw(ignore)]
-        opcode: Number,
+        opcode: u32,
 
         #[br(parse_with = binrw::helpers::until_eof)]
-        args: Vec<Number>,
+        args: Vec<u32>,
     },
 }
 
 impl Instruction {
     #[allow(clippy::too_many_lines)]
     #[must_use]
-    pub const fn opcode(&self) -> Number {
-        Number(match self {
+    pub const fn opcode(&self) -> u32 {
+        match self {
             Self::End => 10,
             Self::CallCommonEvent => 1005,
             Self::ForceFlee => 1006,
@@ -649,7 +647,7 @@ impl Instruction {
             Self::CommentNextLine => 22410,
             Self::ElseBranchB => 23310,
             Self::EndBranchB => 23311,
-            Self::Unknown { opcode, .. } => opcode.0,
-        })
+            Self::Unknown { opcode, .. } => *opcode,
+        }
     }
 }

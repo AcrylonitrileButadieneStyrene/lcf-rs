@@ -1,27 +1,25 @@
 use crate::{
-    helpers::{Array, Number},
-    raw::lmu::{LcfMapUnitChunk, RawLcfMapUnit, event::EventChunk},
+    enums::ScrollType,
+    helpers::Array,
+    lmu::event::Event,
+    raw::lmu::{LcfMapUnitChunk, RawLcfMapUnit},
 };
 
+pub mod event;
 mod panorama;
-mod scroll_type;
 
-pub use panorama::{Panorama, PanoramaBuilder, PanoramaBuilderError};
-pub use scroll_type::ScrollType;
+pub use panorama::Panorama;
 
-#[derive(Clone, Debug, PartialEq, Eq, derive_builder::Builder)]
-#[builder(default, setter(strip_option))]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct LcfMapUnit {
     pub chipset: Option<u32>,
-    #[builder(default = "20")]
     pub width: u32,
-    #[builder(default = "15")]
     pub height: u32,
     pub scroll_type: ScrollType,
     pub panorama: Panorama,
     pub lower: Vec<u16>,
     pub upper: Vec<u16>,
-    pub events: Vec<(Number, Array<crate::helpers::Chunk<EventChunk>>)>,
+    pub events: Vec<Event>,
     pub save_time: u32,
 }
 
@@ -45,13 +43,22 @@ impl Default for LcfMapUnit {
 pub enum LcfMapUnitReadError {
     #[error("decode error: {0}")]
     Decode(#[from] binrw::Error),
-    #[error("build error: {0}")]
-    Build(#[from] LcfMapUnitBuilderError),
-    #[error("panorama build error: {0}")]
-    PanoramaBuild(#[from] PanoramaBuilderError),
 
     #[error("invalid scroll type {0}")]
     InvalidScrollType(u32),
+    #[error("invalid trigger type {0}")]
+    InvalidTriggerType(u32),
+    #[error("invalid priority type {0}")]
+    InvalidPriorityType(u32),
+    #[error("invalid animation type {0}")]
+    InvalidAnimationType(u32),
+
+    #[error("contained unknown event instruction data. chunk: {0} bytes: {1:?}")]
+    UnknownEventInstructionData(u32, Vec<u8>),
+    #[error("contained unknown event page data. chunk: {0} bytes: {1:?}")]
+    UnknownEventPageData(u32, Vec<u8>),
+    #[error("contained unknown event data. chunk: {0} bytes: {1:?}")]
+    UnknownEventData(u32, Vec<u8>),
     #[error("contained unknown data. chunk: {0} bytes: {1:?}")]
     UnknownData(u32, Vec<u8>),
 }
@@ -59,40 +66,56 @@ pub enum LcfMapUnitReadError {
 impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
     type Error = LcfMapUnitReadError;
 
-    fn try_from(value: RawLcfMapUnit) -> Result<Self, Self::Error> {
-        let mut builder = LcfMapUnitBuilder::default();
-        let mut panorama_builder = PanoramaBuilder::default();
+    #[expect(clippy::cast_possible_wrap)]
+    fn try_from(raw: RawLcfMapUnit) -> Result<Self, Self::Error> {
+        let mut value = Self::default();
 
-        for chunk in value.0.inner_vec {
+        for chunk in raw.0.inner_vec {
             match chunk.data {
-                LcfMapUnitChunk::ChipSet(number) => drop(builder.chipset(number.0)),
-                LcfMapUnitChunk::Width(number) => drop(builder.width(number.0)),
-                LcfMapUnitChunk::Height(number) => drop(builder.height(number.0)),
+                LcfMapUnitChunk::ChipSet(number) => value.chipset = Some(number.0),
+                LcfMapUnitChunk::Width(number) => value.width = number.0,
+                LcfMapUnitChunk::Height(number) => value.height = number.0,
                 LcfMapUnitChunk::ScrollType(number) => {
-                    builder.scroll_type(number.0.try_into()?);
+                    value.scroll_type = ScrollType::from_repr(number.0)
+                        .ok_or(LcfMapUnitReadError::InvalidScrollType(number.0))?;
                 }
-                LcfMapUnitChunk::PanoramaEnabled(_)
-                | LcfMapUnitChunk::PanoramaFile(_)
-                | LcfMapUnitChunk::PanoramaHorizontalLoop(_)
-                | LcfMapUnitChunk::PanoramaVerticalLoop(_)
-                | LcfMapUnitChunk::PanoramaHorizontalAutoScroll(_)
-                | LcfMapUnitChunk::PanoramaHorizontalAutoScrollSpeed(_)
-                | LcfMapUnitChunk::PanoramaVerticalAutoScroll(_)
-                | LcfMapUnitChunk::PanoramaVerticalAutoScrollSpeed(_) => {
-                    panorama_builder.from_chunk(&chunk.data);
+                LcfMapUnitChunk::PanoramaEnabled(number) => value.panorama.enabled = number.0 != 0,
+                LcfMapUnitChunk::PanoramaFile(items) => value.panorama.file = Some(items.clone()),
+                LcfMapUnitChunk::PanoramaHorizontalLoop(number) => {
+                    value.panorama.horizontal_loop = number.0 != 0;
                 }
-                LcfMapUnitChunk::Lower(items) => drop(builder.lower(items)),
-                LcfMapUnitChunk::Upper(items) => drop(builder.upper(items)),
-                LcfMapUnitChunk::Events { chunks } => drop(builder.events(chunks)),
-                LcfMapUnitChunk::SaveTime(number) => drop(builder.save_time(number.0)),
+                LcfMapUnitChunk::PanoramaVerticalLoop(number) => {
+                    value.panorama.vertical_loop = number.0 != 0;
+                }
+                LcfMapUnitChunk::PanoramaHorizontalAutoScroll(number) => {
+                    value.panorama.horizontal_auto_scroll = number.0 != 0;
+                }
+                LcfMapUnitChunk::PanoramaHorizontalAutoScrollSpeed(number) => {
+                    value.panorama.horizontal_auto_scroll_speed = number.0 as i32;
+                }
+                LcfMapUnitChunk::PanoramaVerticalAutoScroll(number) => {
+                    value.panorama.vertical_auto_scroll = number.0 != 0;
+                }
+                LcfMapUnitChunk::PanoramaVerticalAutoScrollSpeed(number) => {
+                    value.panorama.vertical_auto_scroll_speed = number.0 as i32;
+                }
+                LcfMapUnitChunk::Lower(items) => value.lower = items,
+                LcfMapUnitChunk::Upper(items) => value.upper = items,
+                LcfMapUnitChunk::Events { chunks } => {
+                    value.events = chunks
+                        .into_iter()
+                        .map(|(id, chunks)| Event::from_chunks(id.0, chunks.inner_vec))
+                        .try_collect()?;
+                }
+
+                LcfMapUnitChunk::SaveTime(number) => value.save_time = number.0,
                 LcfMapUnitChunk::Unknown { id, bytes } => {
-                    Err(LcfMapUnitReadError::UnknownData(id.0, bytes))?;
+                    return Err(LcfMapUnitReadError::UnknownData(id.0, bytes));
                 }
             }
         }
 
-        builder.panorama(panorama_builder.build()?);
-        Ok(builder.build()?)
+        Ok(value)
     }
 }
 
@@ -130,7 +153,7 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
         chunks.push(LcfMapUnitChunk::Lower(val.lower.clone()));
         chunks.push(LcfMapUnitChunk::Upper(val.upper.clone()));
         chunks.push(LcfMapUnitChunk::Events {
-            chunks: val.events.clone(),
+            chunks: val.events.iter().map(Event::to_chunks).collect(),
         });
 
         chunks.push(LcfMapUnitChunk::SaveTime(val.save_time.into()));

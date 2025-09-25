@@ -6,6 +6,7 @@ pub mod lmu;
 pub mod lsd;
 pub mod raw;
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub enum Lcf {
     DataBase(ldb::LcfDataBase),
     MapTree(lmt::LcfMapTree),

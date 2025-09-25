@@ -1,10 +1,7 @@
-use binrw::{BinRead, BinWrite};
-use byteorder::{LittleEndian, ReadBytesExt as _, WriteBytesExt as _};
-
 use crate::{
     helpers::{Array, Chunk, Number, ToChunkID},
     raw::lmu::event::{
-        command::Command, move_route::EventMoveRouteChunk, trigger::EventTriggerChunk,
+        commands::Commands, condition::EventPageConditionChunk, move_route::EventMoveRouteChunk,
     },
 };
 
@@ -14,7 +11,7 @@ use crate::{
 #[br(import(id: Number, length: Number))]
 pub enum EventPageChunk {
     #[br(pre_assert(id.0 == 2))]
-    TriggerTerm(Array<Chunk<EventTriggerChunk>>),
+    Condition(Array<Chunk<EventPageConditionChunk>>),
 
     /// "If this element is empty event graphic will be upper `ChipSet`."
     /// - Type: string
@@ -33,9 +30,11 @@ pub enum EventPageChunk {
     #[br(pre_assert(id.0 == 23))]
     GraphicDirection(Number),
 
-    /// - Type: "boolean"
-    /// - Values: 0 or 2
     #[br(pre_assert(id.0 == 24))]
+    GraphicPattern(Number),
+
+    /// - Type: boolean
+    #[br(pre_assert(id.0 == 25))]
     GraphicTransparent(Number),
 
     /// - 0: Fixed
@@ -51,9 +50,6 @@ pub enum EventPageChunk {
     /// - Range: 1 to 8
     #[br(pre_assert(id.0 == 32))]
     MovementFrequency(Number),
-
-    #[br(pre_assert(id.0 == 41))]
-    MovementRoute(Array<Chunk<EventMoveRouteChunk>>),
 
     /// - 0: Action Button
     /// - 1: Player Touch
@@ -82,15 +78,18 @@ pub enum EventPageChunk {
     #[br(pre_assert(id.0 == 36))]
     AnimationType(Number),
 
+    #[br(pre_assert(id.0 == 37))]
+    MoveSpeed(Number),
+
+    #[br(pre_assert(id.0 == 41))]
+    MovementRoute(Array<Chunk<EventMoveRouteChunk>>),
+
+    /// - Type: size in bytes of [`Self::Commands`] chunk. Can be ignored.
     #[br(pre_assert(id.0 == 51))]
     CommandsSize(Number),
 
     #[br(pre_assert(id.0 == 52))]
-    Commands(
-        #[br(parse_with = parse_instructions)]
-        #[bw(write_with = write_instructions)]
-        Vec<Command>,
-    ),
+    Commands(Commands),
 
     Unknown {
         #[br(calc = id)]
@@ -105,11 +104,12 @@ pub enum EventPageChunk {
 impl ToChunkID for EventPageChunk {
     fn id(&self) -> Number {
         Number(match self {
-            Self::TriggerTerm(_) => 2,
+            Self::Condition(_) => 2,
             Self::GraphicFile(_) => 21,
             Self::GraphicIndex(_) => 22,
             Self::GraphicDirection(_) => 23,
-            Self::GraphicTransparent(_) => 24,
+            Self::GraphicPattern(_) => 24,
+            Self::GraphicTransparent(_) => 25,
             Self::MovementType(_) => 31,
             Self::MovementFrequency(_) => 32,
             Self::MovementRoute(_) => 41,
@@ -117,36 +117,10 @@ impl ToChunkID for EventPageChunk {
             Self::Priority(_) => 34,
             Self::PriorityForbidEventOverlap(_) => 35,
             Self::AnimationType(_) => 36,
+            Self::MoveSpeed(_) => 37,
             Self::CommandsSize(_) => 51,
             Self::Commands(_) => 52,
             Self::Unknown { id, .. } => id.0,
         })
     }
-}
-
-#[binrw::parser(reader, endian)]
-fn parse_instructions() -> Result<Vec<Command>, binrw::Error> {
-    let mut instructions = Vec::new();
-    loop {
-        let terminator = reader.read_u32::<LittleEndian>()?;
-        if terminator == 0 {
-            break;
-        }
-
-        reader.seek_relative(-4)?;
-        instructions.push(Command::read_options(reader, endian, ())?);
-    }
-
-    Ok(instructions)
-}
-
-#[binrw::writer(writer, endian)]
-fn write_instructions(instructions: &Vec<Command>) -> Result<(), binrw::Error> {
-    for instruction in instructions {
-        instruction.write_options(writer, endian, ())?;
-    }
-
-    writer.write_u32::<LittleEndian>(0)?;
-
-    Ok(())
 }

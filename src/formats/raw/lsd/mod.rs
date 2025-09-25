@@ -2,7 +2,7 @@ use crate::helpers::{Array, Chunk, Number, ToChunkID};
 
 #[binrw::binrw]
 #[brw(magic(b"\x0bLcfSaveData"), little)]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RawLcfSaveData(pub Array<Chunk<LcfSaveDataChunk>>);
 
 #[binrw::binrw]

@@ -1,5 +1,6 @@
 use crate::raw::lsd::RawLcfSaveData;
 
+#[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct LcfSaveData {}
 
 #[derive(Debug, thiserror::Error)]

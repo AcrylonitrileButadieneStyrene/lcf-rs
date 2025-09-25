@@ -4,7 +4,7 @@ pub mod chipset;
 
 #[binrw::binrw]
 #[brw(magic(b"\x0bLcfDataBase"), little)]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RawLcfDataBase(pub Array<Chunk<LcfDataBaseChunk>>);
 
 #[binrw::binrw]

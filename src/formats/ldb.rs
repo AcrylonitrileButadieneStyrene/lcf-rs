@@ -1,5 +1,6 @@
 use crate::raw::ldb::RawLcfDataBase;
 
+#[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct LcfDataBase {}
 
 #[derive(Debug, thiserror::Error)]

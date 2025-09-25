@@ -3,6 +3,8 @@
 #![warn(clippy::cargo)]
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::cast_possible_truncation)]
+#![feature(iterator_try_collect)]
+#![feature(iter_array_chunks)]
 
 //! # Lcf-rs
 //!
@@ -35,8 +37,10 @@
 //! assert!(matches!(database, lcf::Lcf::DataBase(_)))
 //! ```
 
-mod formats;
-pub mod helpers;
 mod macros;
 
+pub mod enums;
+pub mod helpers;
+
+mod formats;
 pub use formats::*;

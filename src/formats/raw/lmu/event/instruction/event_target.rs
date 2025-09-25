@@ -1,6 +1,6 @@
-use crate::helpers::Number;
+use byteorder::{ReadBytesExt as _, WriteBytesExt as _};
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum EventTarget {
     Player,
     Boat,
@@ -15,10 +15,10 @@ impl binrw::BinRead for EventTarget {
 
     fn read_options<R: std::io::Read + std::io::Seek>(
         reader: &mut R,
-        endian: binrw::Endian,
-        args: Self::Args<'_>,
+        _endian: binrw::Endian,
+        _args: Self::Args<'_>,
     ) -> binrw::BinResult<Self> {
-        Ok(match Number::read_options(reader, endian, args)?.0 {
+        Ok(match reader.read_u32::<byteorder::NativeEndian>()? {
             10001 => Self::Player,
             10002 => Self::Boat,
             10003 => Self::Ship,
@@ -35,18 +35,16 @@ impl binrw::BinWrite for EventTarget {
     fn write_options<W: std::io::Write + std::io::Seek>(
         &self,
         writer: &mut W,
-        endian: binrw::Endian,
-        args: Self::Args<'_>,
+        _endian: binrw::Endian,
+        _args: Self::Args<'_>,
     ) -> binrw::BinResult<()> {
-        let id = match self {
+        Ok(writer.write_u32::<byteorder::NativeEndian>(match self {
             Self::Player => 10001,
             Self::Boat => 10002,
             Self::Ship => 10003,
             Self::Airship => 10004,
             Self::Itself => 10005,
             Self::Map(x) => *x,
-        };
-
-        Number(id).write_options(writer, endian, args)
+        })?)
     }
 }

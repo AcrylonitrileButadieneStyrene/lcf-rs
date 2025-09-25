@@ -4,7 +4,7 @@ use crate::helpers::{Number, ToChunkID};
 #[br(import(id: Number, length: Number))]
 #[derive(Clone, Debug)]
 #[brw(little)]
-pub enum MapBGM {
+pub enum MapBGMChunk {
     #[br(pre_assert(id.0 == 1))]
     FileName(#[br(count = length.0)] Vec<u8>),
     /// - Unit: milliseconds
@@ -22,7 +22,7 @@ pub enum MapBGM {
     #[br(pre_assert(id.0 == 4))]
     Tempo(Number),
     /// - Range: 0 (left) to 50 (center) to 100 (right)
-    /// - Default: 0
+    /// - Default: 50
     #[br(pre_assert(id.0 == 5))]
     Balance(Number),
 
@@ -36,7 +36,7 @@ pub enum MapBGM {
     },
 }
 
-impl ToChunkID for MapBGM {
+impl ToChunkID for MapBGMChunk {
     fn id(&self) -> Number {
         Number(match self {
             Self::FileName(_) => 1,

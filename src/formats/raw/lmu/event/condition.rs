@@ -4,7 +4,7 @@ use crate::helpers::{Number, ToChunkID};
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[brw(little)]
 #[br(import(id: Number, length: Number))]
-pub enum EventTriggerChunk {
+pub enum EventPageConditionChunk {
     Unknown {
         #[br(calc = id)]
         #[bw(ignore)]
@@ -15,7 +15,7 @@ pub enum EventTriggerChunk {
     },
 }
 
-impl ToChunkID for EventTriggerChunk {
+impl ToChunkID for EventPageConditionChunk {
     fn id(&self) -> Number {
         Number(match self {
             Self::Unknown { id, .. } => id.0,

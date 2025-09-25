@@ -3,6 +3,7 @@ pub mod lmt;
 pub mod lmu;
 pub mod lsd;
 
+#[derive(Clone, Debug)]
 #[binrw::binrw]
 #[brw(little)]
 pub enum RawLcf {
