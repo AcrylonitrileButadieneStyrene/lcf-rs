@@ -110,7 +110,7 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
 
                 LcfMapUnitChunk::SaveTime(number) => value.save_time = number.0,
                 LcfMapUnitChunk::Unknown { id, bytes } => {
-                    return Err(LcfMapUnitReadError::UnknownData(id.0, bytes));
+                    return Err(LcfMapUnitReadError::UnknownData(id, bytes));
                 }
             }
         }

@@ -34,7 +34,7 @@ impl Start {
                 StartChunk::AirshipX(val) => airship.x = val.0,
                 StartChunk::AirshipY(val) => airship.y = val.0,
                 StartChunk::Unknown { id, bytes } => {
-                    return Err(LcfMapTreeReadError::UnknownStartData(id.0, bytes));
+                    return Err(LcfMapTreeReadError::UnknownStartData(id, bytes));
                 }
             }
         }

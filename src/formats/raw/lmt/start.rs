@@ -3,46 +3,46 @@ use crate::helpers::{Number, ToChunkID};
 #[binrw::binrw]
 #[derive(Clone, Debug)]
 #[brw(little)]
-#[br(import(id: Number, length: Number))]
+#[br(import(id: u32, length: u32))]
 pub enum StartChunk {
-    #[br(pre_assert(id.0 == 1))]
+    #[br(pre_assert(id == 1))]
     PartyMapID(Number),
-    #[br(pre_assert(id.0 == 2))]
+    #[br(pre_assert(id == 2))]
     PartyX(Number),
-    #[br(pre_assert(id.0 == 3))]
+    #[br(pre_assert(id == 3))]
     PartyY(Number),
-    #[br(pre_assert(id.0 == 11))]
+    #[br(pre_assert(id == 11))]
     BoatMapID(Number),
-    #[br(pre_assert(id.0 == 12))]
+    #[br(pre_assert(id == 12))]
     BoatX(Number),
-    #[br(pre_assert(id.0 == 13))]
+    #[br(pre_assert(id == 13))]
     BoatY(Number),
-    #[br(pre_assert(id.0 == 21))]
+    #[br(pre_assert(id == 21))]
     ShipMapID(Number),
-    #[br(pre_assert(id.0 == 22))]
+    #[br(pre_assert(id == 22))]
     ShipX(Number),
-    #[br(pre_assert(id.0 == 23))]
+    #[br(pre_assert(id == 23))]
     ShipY(Number),
-    #[br(pre_assert(id.0 == 31))]
+    #[br(pre_assert(id == 31))]
     AirshipMapID(Number),
-    #[br(pre_assert(id.0 == 32))]
+    #[br(pre_assert(id == 32))]
     AirshipX(Number),
-    #[br(pre_assert(id.0 == 33))]
+    #[br(pre_assert(id == 33))]
     AirshipY(Number),
 
     Unknown {
         #[br(calc = id)]
         #[bw(ignore)]
-        id: Number,
+        id: u32,
 
-        #[br(count = length.0)]
+        #[br(count = length)]
         bytes: Vec<u8>,
     },
 }
 
 impl ToChunkID for StartChunk {
-    fn id(&self) -> Number {
-        Number(match self {
+    fn id(&self) -> u32 {
+        match self {
             Self::PartyMapID(_) => 1,
             Self::PartyX(_) => 2,
             Self::PartyY(_) => 3,
@@ -55,7 +55,7 @@ impl ToChunkID for StartChunk {
             Self::AirshipMapID(_) => 31,
             Self::AirshipX(_) => 32,
             Self::AirshipY(_) => 33,
-            Self::Unknown { id, .. } => id.0,
-        })
+            Self::Unknown { id, .. } => *id,
+        }
     }
 }

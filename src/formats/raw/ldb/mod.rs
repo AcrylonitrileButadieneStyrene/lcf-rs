@@ -1,4 +1,4 @@
-use crate::helpers::{Array, Chunk, Number, ToChunkID};
+use crate::helpers::{Array, Chunk, ToChunkID};
 
 pub mod chipset;
 
@@ -10,26 +10,26 @@ pub struct RawLcfDataBase(pub Array<Chunk<LcfDataBaseChunk>>);
 #[binrw::binrw]
 #[derive(Clone, Debug)]
 #[brw(little)]
-#[br(import(id: Number, length: Number))]
+#[br(import(id: u32, length: u32))]
 pub enum LcfDataBaseChunk {
-    #[br(pre_assert(id.0 == 20))]
+    #[br(pre_assert(id == 20))]
     ChipSet(chipset::ChipSet),
 
     Unknown {
         #[br(calc = id)]
         #[bw(ignore)]
-        id: Number,
+        id: u32,
 
-        #[br(count = length.0)]
+        #[br(count = length)]
         bytes: Vec<u8>,
     },
 }
 
 impl ToChunkID for LcfDataBaseChunk {
-    fn id(&self) -> Number {
-        Number(match self {
+    fn id(&self) -> u32 {
+        match self {
             Self::ChipSet(_) => 20,
-            Self::Unknown { id, .. } => id.0,
-        })
+            Self::Unknown { id, .. } => *id,
+        }
     }
 }

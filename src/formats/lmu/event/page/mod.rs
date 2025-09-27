@@ -57,7 +57,7 @@ impl EventPage {
                 EventPageChunk::CommandsSize(_) => (),
                 EventPageChunk::Commands(commands) => value.commands = commands.0,
                 EventPageChunk::Unknown { id, bytes } => {
-                    return Err(LcfMapUnitReadError::UnknownEventPageData(id.0, bytes));
+                    return Err(LcfMapUnitReadError::UnknownEventPageData(id, bytes));
                 }
             }
         }

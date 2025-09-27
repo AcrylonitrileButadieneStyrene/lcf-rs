@@ -20,37 +20,37 @@ pub struct ChipSetChunks {
 }
 
 impl ToChunkID for ChipSetChunks {
-    fn id(&self) -> Number {
-        self.index
+    fn id(&self) -> u32 {
+        self.index.0
     }
 }
 
 #[binrw::binrw]
-#[br(import(id: Number, length: Number))]
+#[br(import(id: u32, length: u32))]
 #[derive(Clone, Debug)]
 #[brw(little)]
 pub enum ChipSetChunk {
-    #[br(pre_assert(id.0 == 1))]
-    Name(#[br(count = length.0)] Vec<u8>),
-    #[br(pre_assert(id.0 == 2))]
-    File(#[br(count = length.0)] Vec<u8>),
+    #[br(pre_assert(id == 1))]
+    Name(#[br(count = length)] Vec<u8>),
+    #[br(pre_assert(id == 2))]
+    File(#[br(count = length)] Vec<u8>),
 
     Unknown {
         #[br(calc = id)]
         #[bw(ignore)]
-        id: Number,
+        id: u32,
 
-        #[br(count = length.0)]
+        #[br(count = length)]
         bytes: Vec<u8>,
     },
 }
 
 impl ToChunkID for ChipSetChunk {
-    fn id(&self) -> Number {
-        Number(match self {
+    fn id(&self) -> u32 {
+        match self {
             Self::Name(_) => 1,
             Self::File(_) => 2,
-            Self::Unknown { id, .. } => id.0,
-        })
+            Self::Unknown { id, .. } => *id,
+        }
     }
 }

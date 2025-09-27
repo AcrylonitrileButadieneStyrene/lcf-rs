@@ -3,21 +3,21 @@ use binrw::BinWrite as _;
 use crate::helpers::Number;
 
 pub trait ToChunkID {
-    fn id(&self) -> Number;
+    fn id(&self) -> u32;
 }
 
 #[binrw::binrw]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Chunk<T>
 where
-    T: for<'a> binrw::BinRead<Args<'a> = (Number, Number)>
+    T: for<'a> binrw::BinRead<Args<'a> = (u32, u32)>
         + binrw::meta::ReadEndian
         + for<'a> binrw::BinWrite<Args<'a>: Default>
         + binrw::meta::WriteEndian
         + ToChunkID,
 {
     #[br(temp)]
-    #[bw(calc = data.id())]
+    #[bw(calc = Number(data.id()))]
     pub id: Number,
 
     #[br(temp)]
@@ -30,7 +30,7 @@ where
 
     #[br(calc = {
         let mut cursor = std::io::Cursor::new(&read_bytes);
-        let value = T::read_args(&mut cursor, (id, read_length))?;
+        let value = T::read_args(&mut cursor, (id.0, read_length.0))?;
         debug_assert_eq!(cursor.position() as u32, read_length.0);
         value
     })]
@@ -61,7 +61,7 @@ where
 
 impl<T> From<T> for Chunk<T>
 where
-    T: for<'a> binrw::BinRead<Args<'a> = (Number, Number)>
+    T: for<'a> binrw::BinRead<Args<'a> = (u32, u32)>
         + binrw::meta::ReadEndian
         + for<'a> binrw::BinWrite<Args<'a>: Default>
         + binrw::meta::WriteEndian

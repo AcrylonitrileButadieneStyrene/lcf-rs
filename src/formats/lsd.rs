@@ -7,13 +7,17 @@ pub struct LcfSaveData {}
 pub enum LcfSaveDataReadError {
     #[error("decode error: {0}")]
     Decode(#[from] binrw::Error),
+
+    #[error("not yet implemented")]
+    NotYetImplemented,
 }
 
 impl TryFrom<RawLcfSaveData> for LcfSaveData {
     type Error = LcfSaveDataReadError;
 
     fn try_from(_value: RawLcfSaveData) -> Result<Self, Self::Error> {
-        todo!("instead use `lcf::raw::lsd::RawLcfSaveData`")
+        return Err(LcfSaveDataReadError::NotYetImplemented);
+        // todo!("instead use `lcf::raw::lsd::RawLcfSaveData`")
     }
 }
 

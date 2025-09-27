@@ -2,26 +2,26 @@ use crate::helpers::{Array, Chunk, Number, ToChunkID};
 
 pub mod command;
 pub mod commands;
+pub mod condition;
 pub mod instruction;
 pub mod move_route;
 pub mod page;
-pub mod condition;
 
 #[binrw::binrw]
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[brw(little)]
-#[br(import(id: Number, length: Number))]
+#[br(import(id: u32, length: u32))]
 pub enum EventChunk {
-    #[br(pre_assert(id.0 == 1))]
-    Name(#[br(count = length.0)] Vec<u8>),
+    #[br(pre_assert(id == 1))]
+    Name(#[br(count = length)] Vec<u8>),
 
-    #[br(pre_assert(id.0 == 2))]
+    #[br(pre_assert(id == 2))]
     PositionX(Number),
 
-    #[br(pre_assert(id.0 == 3))]
+    #[br(pre_assert(id == 3))]
     PositionY(Number),
 
-    #[br(pre_assert(id.0 == 5))]
+    #[br(pre_assert(id == 5))]
     Pages {
         #[bw(calc = Number(chunks.len() as u32))]
         count: Number,
@@ -33,21 +33,21 @@ pub enum EventChunk {
     Unknown {
         #[br(calc = id)]
         #[bw(ignore)]
-        id: Number,
+        id: u32,
 
-        #[br(count = length.0)]
+        #[br(count = length)]
         bytes: Vec<u8>,
     },
 }
 
 impl ToChunkID for EventChunk {
-    fn id(&self) -> Number {
-        Number(match self {
+    fn id(&self) -> u32 {
+        match self {
             Self::Name(_) => 1,
             Self::PositionX(_) => 2,
             Self::PositionY(_) => 3,
             Self::Pages { .. } => 5,
-            Self::Unknown { id, .. } => id.0,
-        })
+            Self::Unknown { id, .. } => *id,
+        }
     }
 }

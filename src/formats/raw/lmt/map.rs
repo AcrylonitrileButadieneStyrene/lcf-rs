@@ -6,54 +6,54 @@ use crate::{
 #[binrw::binrw]
 #[derive(Clone, Debug)]
 #[brw(little)]
-#[br(import(id: Number, length: Number))]
+#[br(import(id: u32, length: u32))]
 pub enum MapChunk {
     /// For the 0th map, this is the game title.
-    #[br(pre_assert(id.0 == 1))]
-    Name(#[br(count = length.0)] Vec<u8>),
-    #[br(pre_assert(id.0 == 2))]
+    #[br(pre_assert(id == 1))]
+    Name(#[br(count = length)] Vec<u8>),
+    #[br(pre_assert(id == 2))]
     Parent(Number),
-    #[br(pre_assert(id.0 == 3))]
+    #[br(pre_assert(id == 3))]
     Indentation(Number),
-    #[br(pre_assert(id.0 == 4))]
+    #[br(pre_assert(id == 4))]
     Type(Number),
-    #[br(pre_assert(id.0 == 5))]
+    #[br(pre_assert(id == 5))]
     HorizontalScrollBar(Number),
-    #[br(pre_assert(id.0 == 6))]
+    #[br(pre_assert(id == 6))]
     VerticalScrollBar(Number),
     /// - Type: boolean
-    #[br(pre_assert(id.0 == 7))]
+    #[br(pre_assert(id == 7))]
     Expanded(Number),
     /// * 0: Inherit
     /// * 1: Set by map event
     /// * 2: Preset
-    #[br(pre_assert(id.0 == 11))]
+    #[br(pre_assert(id == 11))]
     BGM(Number),
-    #[br(pre_assert(id.0 == 12))]
+    #[br(pre_assert(id == 12))]
     BGMData(Array<Chunk<MapBGMChunk>>),
     /// * 0: Inherit
     /// * 1: Set by map event
     /// * 2: Preset
-    #[br(pre_assert(id.0 == 21))]
+    #[br(pre_assert(id == 21))]
     Background(Number),
-    #[br(pre_assert(id.0 == 22))]
-    BackgroundFile(#[br(count = length.0)] Vec<u8>),
+    #[br(pre_assert(id == 22))]
+    BackgroundFile(#[br(count = length)] Vec<u8>),
     /// * 0: Inherit
     /// * 1: Set by map event
     /// * 2: Preset
-    #[br(pre_assert(id.0 == 31))]
+    #[br(pre_assert(id == 31))]
     Teleport(Number),
-    #[br(pre_assert(id.0 == 32))]
+    #[br(pre_assert(id == 32))]
     Escape(Number),
-    #[br(pre_assert(id.0 == 33))]
+    #[br(pre_assert(id == 33))]
     Save(Number),
-    #[br(pre_assert(id.0 == 41))]
-    EncounterEnemyGroup(#[br(count = length.0)] Vec<u8>),
+    #[br(pre_assert(id == 41))]
+    EncounterEnemyGroup(#[br(count = length)] Vec<u8>),
     /// Default 25
-    #[br(pre_assert(id.0 == 44))]
+    #[br(pre_assert(id == 44))]
     EnemyAppearStep(Number),
     /// Normal map will be all 0
-    #[br(pre_assert(id.0 == 51))]
+    #[br(pre_assert(id == 51))]
     AreaRange {
         begin_x: u32,
         begin_y: u32,
@@ -64,16 +64,16 @@ pub enum MapChunk {
     Unknown {
         #[br(calc = id)]
         #[bw(ignore)]
-        id: Number,
+        id: u32,
 
-        #[br(count = length.0)]
+        #[br(count = length)]
         bytes: Vec<u8>,
     },
 }
 
 impl ToChunkID for MapChunk {
-    fn id(&self) -> Number {
-        Number(match self {
+    fn id(&self) -> u32 {
+        match self {
             Self::Name(_) => 1,
             Self::Parent(_) => 2,
             Self::Indentation(_) => 3,
@@ -91,7 +91,7 @@ impl ToChunkID for MapChunk {
             Self::EncounterEnemyGroup(_) => 41,
             Self::EnemyAppearStep(_) => 44,
             Self::AreaRange { .. } => 51,
-            Self::Unknown { id, .. } => id.0,
-        })
+            Self::Unknown { id, .. } => *id,
+        }
     }
 }

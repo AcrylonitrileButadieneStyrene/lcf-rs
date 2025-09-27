@@ -1,24 +1,22 @@
-use crate::helpers::{Number, ToChunkID};
-
 #[binrw::binrw]
 #[derive(Clone, Debug, PartialEq, Eq)]
 #[brw(little)]
-#[br(import(id: Number, length: Number))]
+#[br(import(id: u32, length: u32))]
 pub enum EventMoveRouteChunk {
     Unknown {
         #[br(calc = id)]
         #[bw(ignore)]
-        id: Number,
+        id: u32,
 
-        #[br(count = length.0)]
+        #[br(count = length)]
         bytes: Vec<u8>,
     },
 }
 
-impl ToChunkID for EventMoveRouteChunk {
-    fn id(&self) -> Number {
-        Number(match self {
-            Self::Unknown { id, .. } => id.0,
-        })
+impl crate::helpers::ToChunkID for EventMoveRouteChunk {
+    fn id(&self) -> u32 {
+        match self {
+            Self::Unknown { id, .. } => *id,
+        }
     }
 }

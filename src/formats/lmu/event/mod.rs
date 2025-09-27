@@ -45,7 +45,7 @@ impl Event {
                         .try_collect()?;
                 }
                 EventChunk::Unknown { id, bytes } => {
-                    return Err(LcfMapUnitReadError::UnknownEventData(id.0, bytes));
+                    return Err(LcfMapUnitReadError::UnknownEventData(id, bytes));
                 }
             }
         }

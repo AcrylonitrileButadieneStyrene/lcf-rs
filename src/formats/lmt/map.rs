@@ -82,7 +82,7 @@ impl Map {
                             MapBGMChunk::Tempo(val) => bgm.tempo = val.0,
                             MapBGMChunk::Balance(val) => bgm.balance = val.0,
                             MapBGMChunk::Unknown { id, bytes } => {
-                                return Err(LcfMapTreeReadError::UnknownBGMData(id.0, bytes));
+                                return Err(LcfMapTreeReadError::UnknownBGMData(id, bytes));
                             }
                         }
                     }
@@ -116,7 +116,7 @@ impl Map {
                     }
                 }
                 MapChunk::Unknown { id, bytes } => {
-                    return Err(LcfMapTreeReadError::UnknownData(id.0, bytes));
+                    return Err(LcfMapTreeReadError::UnknownData(id, bytes));
                 }
             }
         }
