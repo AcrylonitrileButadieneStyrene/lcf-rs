@@ -32,13 +32,45 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 10110))]
     ShowMessage, // TODO
     #[br(pre_assert(opcode == 10120))]
-    MessageOptions, // TODO
+    MessageOptions {
+        /// - 0: Normal
+        /// - 1: Transparent
+        opacity: u32,
+        /// - 0: Top
+        /// - 1: Middle
+        /// - 2: Bottom
+        position: u32,
+        /// - Type: bool
+        avoid_covering_player: u32,
+        /// - Type: bool
+        allow_event_processing: u32,
+    },
     #[br(pre_assert(opcode == 10130))]
-    ChangeFaceGraphic, // TODO
+    ChangeFaceset {
+        /// - Range: 0 - 15
+        pattern: u32,
+        /// - 0: Left
+        /// - 1: Right
+        display_position: u32,
+        /// - Type: bool
+        flip_horizontally: u32,
+    },
     #[br(pre_assert(opcode == 10140))]
-    ShowChoice, // TODO
+    ShowChoice {
+        /// - 0: Disallow (cannot cancel)
+        /// - 1: Option 1
+        /// - 2: Option 2
+        /// - 3: Option 3
+        /// - 4: Option 4
+        /// - 5: Branch (else block)
+        cancel_option: u32,
+    },
     #[br(pre_assert(opcode == 10150))]
-    InputNumber, // TODO
+    InputNumber {
+        /// - Range: 0 - 6
+        digits: u32,
+        variable: u32,
+    },
     #[br(pre_assert(opcode == 10210))]
     ControlSwitches {
         /// - 0: Single
@@ -116,23 +148,123 @@ pub enum Instruction {
         value2: u32,
     },
     #[br(pre_assert(opcode == 10230))]
-    TimerOperation, // TODO
+    ControlTimer {
+        /// - 0: Set Time
+        /// - 1: Start
+        /// - 2: Stop
+        operation: u32,
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        seconds: u32,
+        /// - Type: bool
+        show_timer: u32,
+        /// - Type: bool
+        continue_in_battles: u32,
+    },
     #[br(pre_assert(opcode == 10310))]
-    ChangeGold, // TODO
+    ChangeGold {
+        /// - 0: increase
+        /// - 1: decrease
+        operation: u32,
+        /// - 0: constant
+        /// - 1: variable
+        operand: u32,
+        value: u32,
+    },
     #[br(pre_assert(opcode == 10320))]
-    ChangeItems, // TODO
+    ChangeItems {
+        /// - 0: Increase
+        /// - 1: Decrease
+        operation: u32,
+        /// - 0: Fixed
+        /// - 1: Variable
+        item_target: u32,
+        item: u32,
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        value: u32,
+    },
     #[br(pre_assert(opcode == 10330))]
-    ChangePartyMembers, // TODO
+    ChangePartyMembers {
+        /// - 0: Add
+        /// - 1: Remove
+        operation: u32,
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        actor: u32,
+    },
     #[br(pre_assert(opcode == 10410))]
     ChangeExp, // TODO
     #[br(pre_assert(opcode == 10420))]
-    ChangeLevel, // TODO
+    ChangeLevel {
+        /// - 0: Entire party
+        /// - 1: Fixed
+        /// - 2: Variable
+        actor_operand: u32,
+        actor: u32,
+        /// - 0: Increase
+        /// - 1: Decrease
+        operation: u32,
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        value: u32,
+        /// - Type: bool
+        show_level_up_message: u32,
+    },
     #[br(pre_assert(opcode == 10430))]
-    ChangeParameters, // TODO
+    ChangeParameters {
+        /// - 0: Entire Party
+        /// - 1: Constant
+        /// - 2: Variable
+        actor_operand: u32,
+        actor: u32,
+        /// - 0: Increase
+        /// - 1: Decrease
+        operation: u32,
+        /// - 0: Maximum HP
+        /// - 1: Maximum MP
+        /// - 2: Attack
+        /// - 3: Defense
+        /// - 4: Mind
+        /// - 5: Agility
+        parameter: u32,
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        value: u32,
+    },
     #[br(pre_assert(opcode == 10440))]
-    ChangeSkills, // TODO
+    ChangeSkills {
+        /// - 0: Entire party
+        /// - 1: Fixed
+        /// - 2: Variable
+        actor_operand: u32,
+        actor: u32,
+        /// - 0: Learn
+        /// - 1: Forget
+        operation: u32,
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        value: u32,
+    },
     #[br(pre_assert(opcode == 10450))]
-    ChangeEquipment, // TODO
+    ChangeEquipment {
+        /// - 0: Entire party
+        /// - 1: Fixed
+        /// - 2: Variable
+        actor_operand: u32,
+        actor: u32,
+        /// - 0: Change
+        /// - 1: Remove
+        operation: u32,
+        operand_or_type: u32,
+        value: u32,
+    },
     #[br(pre_assert(opcode == 10460))]
     ChangeHP, // TODO
     #[br(pre_assert(opcode == 10470))]
@@ -140,25 +272,60 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 10480))]
     ChangeCondition, // TODO
     #[br(pre_assert(opcode == 10490))]
-    FullHeal, // TODO
+    RecoverAll {
+        /// - 0: Entire Party
+        /// - 1: Constant
+        /// - 2: Variable
+        operand: u32,
+        value: u32,
+    }, // TODO
     #[br(pre_assert(opcode == 10500))]
     SimulatedAttack, // TODO
     #[br(pre_assert(opcode == 10610))]
-    ChangeHeroName, // TODO
+    ChangeActorName { actor: u32 },
     #[br(pre_assert(opcode == 10620))]
-    ChangeHeroTitle, // TODO
+    ChangeActorNickname { actor: u32 },
     #[br(pre_assert(opcode == 10630))]
-    ChangeSpriteAssociation, // TODO
+    ChangeActorGraphic {
+        actor: u32,
+        /// - Range: 0 - 15
+        pattern: u32,
+        /// - Type: bool
+        transparent: u32,
+    },
     #[br(pre_assert(opcode == 10640))]
-    ChangeActorFace, // TODO
+    ChangeActorFaceset { actor: u32, pattern: u32 },
     #[br(pre_assert(opcode == 10650))]
     ChangeVehicleGraphic, // TODO
     #[br(pre_assert(opcode == 10660))]
     ChangeSystemBGM, // TODO
     #[br(pre_assert(opcode == 10670))]
-    ChangeSystemSFX, // TODO
+    ChangeSystemSE {
+        /// - 0: Cursor
+        /// - 1: Select
+        /// - 2: Cancel
+        /// - 3: Buzzer
+        /// - 4: Battle Start
+        /// - 5: Enemy Attack
+        /// - 6: Enemy Damage
+        /// - 7: Actor Damage
+        /// - 8: Evasion
+        /// - 9: Enemy Collapse
+        /// - 10: Use Item
+        r#type: u32,
+        volume: u32,
+        temp: u32,
+        balance: u32,
+    },
     #[br(pre_assert(opcode == 10680))]
-    ChangeSystemGraphics, // TODO
+    ChangeSystemGraphics {
+        /// - 0: Stretch to Fit
+        /// - 1: Tiled Pattern
+        window_background: u32,
+        /// - 0: RPG2000
+        /// - 1: RPG2000G
+        font: u32,
+    },
     #[br(pre_assert(opcode == 10690))]
     ChangeScreenTransitions {
         /// - 0: Hide player
@@ -194,11 +361,21 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 10710))]
     EnemyEncounter, // TODO
     #[br(pre_assert(opcode == 10720))]
-    OpenShop, // TODO
+    OpenShop {
+        #[br(parse_with = binrw::helpers::until_eof)]
+        args: Vec<u32>,
+    }, // TODO
     #[br(pre_assert(opcode == 10730))]
     ShowInn, // TODO
     #[br(pre_assert(opcode == 10740))]
-    EnterHeroName, // TODO
+    NameInputProcessing {
+        actor: u32,
+        /// - 0: Letters
+        /// - 1: Symbols
+        mode: u32,
+        /// - Type: bool
+        show_default_name: u32,
+    },
     #[br(pre_assert(opcode == 10810))]
     TransferPlayer {
         /// If the map ID here is the same as the current map ID, then the map will not be reloaded.
@@ -206,15 +383,44 @@ pub enum Instruction {
         map: u32,
         x: u32,
         y: u32,
+        /// Facing direction after teleporting.
+        /// Trying to view an instruction with this field present causes the Steam English version of the r2k editor to freeze for a minute.
+        /// - 0: Preserve
+        /// - 1: Up
+        /// - 2: Right
+        /// - 3: Down
+        /// - 4: Left
+        #[br(try)]
+        direction: Option<u32>,
     },
     #[br(pre_assert(opcode == 10820))]
-    MemorizeLocation, // TODO
+    GetPlayerLocation {
+        output_map: u32,
+        output_x: u32,
+        output_y: u32,
+    },
     #[br(pre_assert(opcode == 10830))]
-    RecallToLocation, // TODO
+    MoveToVariableLocation {
+        map_variable: u32,
+        x_variable: u32,
+        y_variable: u32,
+    },
     #[br(pre_assert(opcode == 10840))]
     EnterExitVehicle, // TODO
     #[br(pre_assert(opcode == 10850))]
-    SetVehicleLocation, // TODO
+    SetVehicleLocation {
+        /// - -1: Unknown
+        /// - 0: Boat
+        /// - 1: Ship
+        /// - 2: Airship
+        vehicle: u32,
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        map: u32,
+        x: u32,
+        y: u32,
+    },
     #[br(pre_assert(opcode == 10860))]
     SetEventLocation {
         source: EventTarget,
@@ -223,11 +429,23 @@ pub enum Instruction {
         mode: u32,
         x_pos: u32,
         y_pos: u32,
+        #[br(try)]
+        direction: Option<u32>,
     },
     #[br(pre_assert(opcode == 10870))]
-    TradeEventLocations, // TODO
+    SwapEventLocation {
+        left: EventTarget,
+        right: EventTarget,
+    },
     #[br(pre_assert(opcode == 10910))]
-    StoreTerrainID, // TODO
+    StoreTerrainID {
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        x: u32,
+        y: u32,
+        output: u32,
+    },
     #[br(pre_assert(opcode == 10920))]
     GetEventLocation {
         /// - 0: Constant
@@ -272,6 +490,8 @@ pub enum Instruction {
         value: u32,
         deciseconds: u32,
         wait_for_completion: u32,
+        #[br(try)]
+        mode: Option<u32>,
     },
     #[br(pre_assert(opcode == 11050))]
     ShakeScreen {
@@ -281,54 +501,119 @@ pub enum Instruction {
         speed: u32,
         deciseconds: u32,
         wait_for_completion: u32,
+        /// - 0: Temporary
+        /// - 1: Start
+        /// - 2: Stop
+        #[br(try)]
+        mode: Option<u32>,
     },
     #[br(pre_assert(opcode == 11060))]
     ScrollMap {
-        /// 0: Fix
-        /// 1: Unfix
-        /// 2: Shift position
-        /// 3: Return to origin
+        /// - 0: Fix
+        /// - 1: Unfix
+        /// - 2: Shift position
+        /// - 3: Return to origin
         mode: u32,
-        // 0: Up
-        // 1: Left
-        // 2: Right
-        // 3: Down
+        /// - 0: Up
+        /// - 1: Left
+        /// - 2: Right
+        /// - 3: Down
         direction: u32,
         distance: u32,
         speed: u32,
         wait_for_completion: u32,
     },
     #[br(pre_assert(opcode == 11070))]
-    WeatherEffects, // TODO
+    WeatherEffects {
+        /// - 0: None
+        /// - 1: Rain
+        /// - 2: Snow
+        r#type: u32,
+        /// - 0: Weak
+        /// - 1: Medium
+        /// - 2: Strong
+        power: u32,
+    },
     #[br(pre_assert(opcode == 11110))]
-    ShowPicture, // TODO
+    ShowPicture {
+        #[br(parse_with = binrw::helpers::until_eof)]
+        args: Vec<u32>,
+    },
     #[br(pre_assert(opcode == 11120))]
-    MovePicture, // TODO
+    MovePicture {
+        #[br(parse_with = binrw::helpers::until_eof)]
+        args: Vec<u32>,
+    },
     #[br(pre_assert(opcode == 11130))]
-    ErasePicture, // TODO
+    ErasePicture {
+        #[br(parse_with = binrw::helpers::until_eof)]
+        args: Vec<u32>,
+    },
     #[br(pre_assert(opcode == 11210))]
-    ShowBattleAnimation, // TODO
+    ShowAnimation {
+        animation: u32,
+        character: EventTarget,
+        /// - Type: bool
+        wait_for_completion: u32,
+        /// - Type: bool
+        show_entire_map: u32,
+    },
     #[br(pre_assert(opcode == 11310))]
-    PlayerVisibility, // TODO
+    ShowHidePlayer {
+        /// - 0: show player
+        /// - 1: hide player
+        state: u32,
+    },
     #[br(pre_assert(opcode == 11320))]
-    FlashSprite, // TODO
+    FlashEvent {
+        target: EventTarget,
+        /// - Range: 0 - 31
+        red: u32,
+        /// - Range: 0 - 31
+        green: u32,
+        /// - Range: 0 - 31
+        blue: u32,
+        /// - Range: 0 - 31
+        value: u32,
+        /// - Unit: deciseconds
+        time: u32,
+        /// - Type: bool
+        wait_for_completion: u32,
+    },
     #[br(pre_assert(opcode == 11330))]
     MoveEvent {
-        // TODO
         target: EventTarget,
         frequency: u32,
         #[br(parse_with = binrw::helpers::until_eof)]
-        rest: Vec<u32>,
+        rest: Vec<u32>, // TODO
     },
     #[br(pre_assert(opcode == 11340))]
     WaitForAllMovement, // TODO
     #[br(pre_assert(opcode == 11350))]
     HaltAllMovement, // TODO
     #[br(pre_assert(opcode == 11410))]
-    Wait { deciseconds: u32 },
-
+    Wait {
+        deciseconds: u32,
+        #[br(try)]
+        unknown: Option<u32>,
+    },
     #[br(pre_assert(opcode == 11510))]
-    PlayBGM, // TODO
+    PlayBGM {
+        /// - Unit: milliseconds
+        /// - Range: 0 - 10,000, step size 1000
+        fade_in: u32,
+        /// - Unit: percentage
+        /// - Range: 0 - 100
+        volume: u32,
+        /// - Unit: percentage
+        /// - Range: 50 - 150
+        tempo: u32,
+        /// - Range: 0 - 100
+        /// - 0: Left
+        /// - 50: Center
+        /// - 100: Right
+        balance: u32,
+    },
     #[br(pre_assert(opcode == 11520))]
     FadeOutBGM { seconds: u32 },
     #[br(pre_assert(opcode == 11530))]
@@ -347,30 +632,64 @@ pub enum Instruction {
         balance: u32,
     },
     #[br(pre_assert(opcode == 11560))]
-    PlayMovie, // TODO
+    PlayMovie {
+        width: u32,
+        height: u32,
+        /// - 0: Constant
+        /// - 1: Variable
+        operand: u32,
+        x: u32,
+        y: u32,
+    },
     #[br(pre_assert(opcode == 11610))]
     KeyInputProcessing {
-        /// Output variable. Expect this variable to be completely trashed and unusable for other purposes.
-        output: u32,
-        /// - Type: Bool
-        /// If true event processing will pause until the animation is complete
-        wait_for_confirmation: u32,
-        /// Appears to be unused in r2k.
-        unknown: u32,
-        /// Space/Z/Enter
-        decision: u32,
-        /// Escape/X/C/V/B/N/Kp0
-        cancel: u32,
-        shift: u32,
-        down: u32,
-        left: u32,
-        right: u32,
-        up: u32,
+        /// There are 3 different versions of this instruction.
+        /// In old r2k it has 5 args, in new r2k it has 10, and in r2k3 it has 14.
+        /// # Common fields:
+        /// 1. output variable (expect this variable to be completely trashed and unusable for other purposes.)
+        /// 2. wait for key press (bool)
+        /// 3. decision key (Space/Z/Enter)
+        /// 4. cancel key (Escape/X/C/V/B/N/Kp0)
+        /// # Old r2k:
+        /// 5. check all directions
+        /// # New r2k:
+        /// 5. unused/unknown (always 0)
+        /// 6. shift
+        /// 7. down
+        /// 8. left
+        /// 9. right
+        /// 10. up
+        /// # r2k3:
+        /// 5. unused/unknown
+        /// 6.
+        /// 7.
+        /// 8.
+        /// 9.
+        /// 10. shift
+        /// 11. down
+        /// 12. left
+        /// 13. right
+        /// 14. up
+        #[br(parse_with(binrw::helpers::until_eof))]
+        args: Vec<u32>,
     },
     #[br(pre_assert(opcode == 11710))]
-    ChangeMapTileset, // TODO
+    ChangeMapTileset { tileset: u32 },
     #[br(pre_assert(opcode == 11720))]
-    ChangePBG, // TODO
+    ChangeParallaxBackground {
+        /// - Type: bool
+        horizontal_loop: u32,
+        /// - Type: bool
+        horizontal_auto_scroll: u32,
+        /// - Range: -8 - 8
+        horizontal_auto_scroll_speed: u32,
+        /// - Type: bool
+        vertical_loop: u32,
+        /// - Type: bool
+        vertical_auto_scroll: u32,
+        /// - Range: -8 - 8
+        vertical_auto_scroll_speed: u32,
+    },
     #[br(pre_assert(opcode == 11740))]
     ChangeEncounterSteps, // TODO
     #[br(pre_assert(opcode == 11750))]
@@ -382,21 +701,46 @@ pub enum Instruction {
         to: u32,
     },
     #[br(pre_assert(opcode == 11810))]
-    TeleportTargets, // TODO
+    SetTeleportPoint {
+        /// - 0: Add
+        /// - 1: Remove
+        operation: u32,
+        map: u32,
+        x: u32,
+        y: u32,
+        switch_enabled: u32,
+        switch: u32,
+    },
     #[br(pre_assert(opcode == 11820))]
     ChangeTeleportAccess, // TODO
     #[br(pre_assert(opcode == 11830))]
-    EscapeTarget, // TODO
+    SetEscapeLocation {
+        map: u32,
+        x: u32,
+        y: u32,
+        /// - Type: bool
+        switch_enabled: u32,
+        switch: u32,
+    },
     #[br(pre_assert(opcode == 11840))]
-    ChangeEscapeAccess, // TODO
+    ChangeEscapeAccess {
+        /// - Type: bool
+        enabled: u32,
+    }, // TODO
     #[br(pre_assert(opcode == 11910))]
-    OpenSaveMenu, // TODO
+    OpenSaveMenu,
     #[br(pre_assert(opcode == 11930))]
-    ChangeSaveAccess, // TODO
+    ChangeSaveAccess {
+        /// - Type: bool
+        state: u32,
+    }, // TODO
     #[br(pre_assert(opcode == 11950))]
     OpenMainMenu, // TODO
     #[br(pre_assert(opcode == 11960))]
-    ChangeMainMenuAccess, // TODO
+    ChangeMenuAccess {
+        /// - Type: bool
+        enabled: u32,
+    },
     #[br(pre_assert(opcode == 12010))]
     ConditionalBranch {
         /// 0: Switch
@@ -422,9 +766,15 @@ pub enum Instruction {
     },
 
     #[br(pre_assert(opcode == 12110))]
-    Label, // TODO
+    Label {
+        /// Range: 1 - 1000
+        value: u32,
+    },
     #[br(pre_assert(opcode == 12120))]
-    JumpToLabel, // TODO
+    JumpToLabel {
+        /// Range: 1 - 1000
+        value: u32,
+    },
     #[br(pre_assert(opcode == 12210))]
     Loop, // TODO
     #[br(pre_assert(opcode == 12220))]
@@ -468,7 +818,7 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 20110))]
     ShowMessage2, // TODO
     #[br(pre_assert(opcode == 20140))]
-    ShowChoiceOption, // TODO
+    ShowChoiceOption { index: u32 },
     #[br(pre_assert(opcode == 20141))]
     ShowChoiceEnd, // TODO
     #[br(pre_assert(opcode == 20710))]
@@ -531,47 +881,47 @@ impl Instruction {
             Self::ToggleFullscreen => 5004,
             Self::OpenVideoOptions => 5005,
             Self::ShowMessage => 10110,
-            Self::MessageOptions => 10120,
-            Self::ChangeFaceGraphic => 10130,
-            Self::ShowChoice => 10140,
-            Self::InputNumber => 10150,
+            Self::MessageOptions { .. } => 10120,
+            Self::ChangeFaceset { .. } => 10130,
+            Self::ShowChoice { .. } => 10140,
+            Self::InputNumber { .. } => 10150,
             Self::ControlSwitches { .. } => 10210,
             Self::ControlVariables { .. } => 10220,
-            Self::TimerOperation => 10230,
-            Self::ChangeGold => 10310,
-            Self::ChangeItems => 10320,
-            Self::ChangePartyMembers => 10330,
+            Self::ControlTimer { .. } => 10230,
+            Self::ChangeGold { .. } => 10310,
+            Self::ChangeItems { .. } => 10320,
+            Self::ChangePartyMembers { .. } => 10330,
             Self::ChangeExp => 10410,
-            Self::ChangeLevel => 10420,
-            Self::ChangeParameters => 10430,
-            Self::ChangeSkills => 10440,
-            Self::ChangeEquipment => 10450,
+            Self::ChangeLevel { .. } => 10420,
+            Self::ChangeParameters { .. } => 10430,
+            Self::ChangeSkills { .. } => 10440,
+            Self::ChangeEquipment { .. } => 10450,
             Self::ChangeHP => 10460,
             Self::ChangeSP => 10470,
             Self::ChangeCondition => 10480,
-            Self::FullHeal => 10490,
+            Self::RecoverAll { .. } => 10490,
             Self::SimulatedAttack => 10500,
-            Self::ChangeHeroName => 10610,
-            Self::ChangeHeroTitle => 10620,
-            Self::ChangeSpriteAssociation => 10630,
-            Self::ChangeActorFace => 10640,
+            Self::ChangeActorName { .. } => 10610,
+            Self::ChangeActorNickname { .. } => 10620,
+            Self::ChangeActorGraphic { .. } => 10630,
+            Self::ChangeActorFaceset { .. } => 10640,
             Self::ChangeVehicleGraphic => 10650,
             Self::ChangeSystemBGM => 10660,
-            Self::ChangeSystemSFX => 10670,
-            Self::ChangeSystemGraphics => 10680,
+            Self::ChangeSystemSE { .. } => 10670,
+            Self::ChangeSystemGraphics { .. } => 10680,
             Self::ChangeScreenTransitions { .. } => 10690,
             Self::EnemyEncounter => 10710,
-            Self::OpenShop => 10720,
+            Self::OpenShop { .. } => 10720,
             Self::ShowInn => 10730,
-            Self::EnterHeroName => 10740,
+            Self::NameInputProcessing { .. } => 10740,
             Self::TransferPlayer { .. } => 10810,
-            Self::MemorizeLocation => 10820,
-            Self::RecallToLocation => 10830,
+            Self::GetPlayerLocation { .. } => 10820,
+            Self::MoveToVariableLocation { .. } => 10830,
             Self::EnterExitVehicle => 10840,
-            Self::SetVehicleLocation => 10850,
+            Self::SetVehicleLocation { .. } => 10850,
             Self::SetEventLocation { .. } => 10860,
-            Self::TradeEventLocations => 10870,
-            Self::StoreTerrainID => 10910,
+            Self::SwapEventLocation { .. } => 10870,
+            Self::StoreTerrainID { .. } => 10910,
             Self::GetEventLocation { .. } => 10920,
             Self::HideScreen { .. } => 11010,
             Self::ShowScreen { .. } => 11020,
@@ -579,39 +929,39 @@ impl Instruction {
             Self::FlashScreen { .. } => 11040,
             Self::ShakeScreen { .. } => 11050,
             Self::ScrollMap { .. } => 11060,
-            Self::WeatherEffects => 11070,
-            Self::ShowPicture => 11110,
-            Self::MovePicture => 11120,
-            Self::ErasePicture => 11130,
-            Self::ShowBattleAnimation => 11210,
-            Self::PlayerVisibility => 11310,
-            Self::FlashSprite => 11320,
+            Self::WeatherEffects { .. } => 11070,
+            Self::ShowPicture { .. } => 11110,
+            Self::MovePicture { .. } => 11120,
+            Self::ErasePicture { .. } => 11130,
+            Self::ShowAnimation { .. } => 11210,
+            Self::ShowHidePlayer { .. } => 11310,
+            Self::FlashEvent { .. } => 11320,
             Self::MoveEvent { .. } => 11330,
             Self::WaitForAllMovement => 11340,
             Self::HaltAllMovement => 11350,
             Self::Wait { .. } => 11410,
-            Self::PlayBGM => 11510,
+            Self::PlayBGM { .. } => 11510,
             Self::FadeOutBGM { .. } => 11520,
             Self::MemorizeBGM => 11530,
             Self::PlayMemorizedBGM => 11540,
             Self::PlaySoundEffect { .. } => 11550,
-            Self::PlayMovie => 11560,
+            Self::PlayMovie { .. } => 11560,
             Self::KeyInputProcessing { .. } => 11610,
-            Self::ChangeMapTileset => 11710,
-            Self::ChangePBG => 11720,
+            Self::ChangeMapTileset { .. } => 11710,
+            Self::ChangeParallaxBackground { .. } => 11720,
             Self::ChangeEncounterSteps => 11740,
             Self::ChangeTile { .. } => 11750,
-            Self::TeleportTargets => 11810,
+            Self::SetTeleportPoint { .. } => 11810,
             Self::ChangeTeleportAccess => 11820,
-            Self::EscapeTarget => 11830,
-            Self::ChangeEscapeAccess => 11840,
+            Self::SetEscapeLocation { .. } => 11830,
+            Self::ChangeEscapeAccess { .. } => 11840,
             Self::OpenSaveMenu => 11910,
-            Self::ChangeSaveAccess => 11930,
+            Self::ChangeSaveAccess { .. } => 11930,
             Self::OpenMainMenu => 11950,
-            Self::ChangeMainMenuAccess => 11960,
+            Self::ChangeMenuAccess { .. } => 11960,
             Self::ConditionalBranch { .. } => 12010,
-            Self::Label => 12110,
-            Self::JumpToLabel => 12120,
+            Self::Label { .. } => 12110,
+            Self::JumpToLabel { .. } => 12120,
             Self::Loop => 12210,
             Self::BreakLoop => 12220,
             Self::EndEventProcessing => 12310,
@@ -629,7 +979,7 @@ impl Instruction {
             Self::ConditionalBranchB => 13310,
             Self::TerminateBattle => 13410,
             Self::ShowMessage2 => 20110,
-            Self::ShowChoiceOption => 20140,
+            Self::ShowChoiceOption { .. } => 20140,
             Self::ShowChoiceEnd => 20141,
             Self::VictoryHandler => 20710,
             Self::EscapeHandler => 20711,

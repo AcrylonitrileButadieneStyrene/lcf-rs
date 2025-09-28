@@ -7,7 +7,7 @@ pub enum EventTarget {
     Ship,
     Airship,
     Itself,
-    Map(u32),
+    MapEvent(u32),
 }
 
 impl binrw::BinRead for EventTarget {
@@ -24,7 +24,7 @@ impl binrw::BinRead for EventTarget {
             10003 => Self::Ship,
             10004 => Self::Airship,
             10005 => Self::Itself,
-            x => Self::Map(x),
+            x => Self::MapEvent(x),
         })
     }
 }
@@ -44,7 +44,7 @@ impl binrw::BinWrite for EventTarget {
             Self::Ship => 10003,
             Self::Airship => 10004,
             Self::Itself => 10005,
-            Self::Map(x) => *x,
+            Self::MapEvent(x) => *x,
         })?)
     }
 }

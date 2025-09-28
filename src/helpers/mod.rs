@@ -1,9 +1,9 @@
 mod array;
 mod chunk;
-mod number;
 mod maybe;
+mod number;
 
 pub use array::Array;
 pub use chunk::{Chunk, ToChunkID};
-pub use number::Number;
 pub use maybe::Maybe;
+pub use number::Number;

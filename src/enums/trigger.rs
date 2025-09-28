@@ -8,5 +8,5 @@ pub enum Trigger {
     PlayerTouch = 1,
     EventTouch = 2,
     Autorun = 3,
-    Parallel = 4
+    Parallel = 4,
 }
