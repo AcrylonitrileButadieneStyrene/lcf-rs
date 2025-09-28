@@ -1,7 +1,3 @@
-mod event_target;
-
-pub use event_target::EventTarget;
-
 #[binrw::binrw]
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[br(import(opcode: u32))]
@@ -423,7 +419,7 @@ pub enum Instruction {
     },
     #[br(pre_assert(opcode == 10860))]
     SetEventLocation {
-        source: EventTarget,
+        source: u32,
         /// - 0: Constant
         /// - 1: Variable
         mode: u32,
@@ -433,10 +429,7 @@ pub enum Instruction {
         direction: Option<u32>,
     },
     #[br(pre_assert(opcode == 10870))]
-    SwapEventLocation {
-        left: EventTarget,
-        right: EventTarget,
-    },
+    SwapEventLocation { left: u32, right: u32 },
     #[br(pre_assert(opcode == 10910))]
     StoreTerrainID {
         /// - 0: Constant
@@ -552,7 +545,7 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 11210))]
     ShowAnimation {
         animation: u32,
-        character: EventTarget,
+        character: u32,
         /// - Type: bool
         wait_for_completion: u32,
         /// - Type: bool
@@ -566,7 +559,7 @@ pub enum Instruction {
     },
     #[br(pre_assert(opcode == 11320))]
     FlashEvent {
-        target: EventTarget,
+        target: u32,
         /// - Range: 0 - 31
         red: u32,
         /// - Range: 0 - 31
@@ -582,7 +575,7 @@ pub enum Instruction {
     },
     #[br(pre_assert(opcode == 11330))]
     MoveEvent {
-        target: EventTarget,
+        target: u32,
         frequency: u32,
         #[br(parse_with = binrw::helpers::until_eof)]
         rest: Vec<u32>, // TODO
