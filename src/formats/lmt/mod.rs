@@ -15,11 +15,11 @@ pub use start::{Position, Start};
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LcfMapTree {
     /// The last map opened in the editor
-    active: u32,
+    pub active: u32,
     /// Information for starting new saves
-    start: Start,
+    pub start: Start,
     /// The 0th map is the game itself.
-    maps: Vec<(u32, Map)>,
+    pub maps: Vec<(u32, Map)>,
 }
 
 #[derive(Debug, thiserror::Error)]

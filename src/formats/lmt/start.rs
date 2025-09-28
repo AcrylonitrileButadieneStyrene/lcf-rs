@@ -6,10 +6,10 @@ use crate::{
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Start {
-    party: Option<Position>,
-    boat: Option<Position>,
-    ship: Option<Position>,
-    airship: Option<Position>,
+    pub party: Option<Position>,
+    pub boat: Option<Position>,
+    pub ship: Option<Position>,
+    pub airship: Option<Position>,
 }
 
 impl Start {

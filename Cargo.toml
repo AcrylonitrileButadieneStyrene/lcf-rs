@@ -8,7 +8,7 @@ lcf = { path = "." }
 
 [package]
 name = "lcf"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2024"
 description = "Bidirectional parser for the lcf file format used by RPG Maker 2000 games"
 readme = "README.md"
