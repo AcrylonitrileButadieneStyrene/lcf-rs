@@ -3,6 +3,7 @@
 #[br(import(opcode: u32))]
 #[brw(little)]
 pub enum Instruction {
+    /// Added at the end of each branch (if and else), before the [`Self::EndBranch`] instruction. Uses the inner indentation level.
     #[br(pre_assert(opcode == 10))]
     End,
     #[br(pre_assert(opcode == 1005))]
@@ -581,9 +582,9 @@ pub enum Instruction {
         rest: Vec<u32>, // TODO
     },
     #[br(pre_assert(opcode == 11340))]
-    WaitForAllMovement, // TODO
+    WaitForAllMovement,
     #[br(pre_assert(opcode == 11350))]
-    HaltAllMovement, // TODO
+    HaltAllMovement,
     #[br(pre_assert(opcode == 11410))]
     Wait {
         deciseconds: u32,
@@ -734,27 +735,42 @@ pub enum Instruction {
         /// - Type: bool
         enabled: u32,
     },
+    /// If there are excess fields, their value is to be set to 0.
+    /// For example, switches only require the first 2 fields, so the last 2 are zeroed.
     #[br(pre_assert(opcode == 12010))]
     ConditionalBranch {
-        /// 0: Switch
-        /// 1: Variable
+        /// - 0: Switch
+        /// - 1: Variable
+        /// - 2: Timer
+        /// - 3: Money
+        /// - 4: Item
+        /// - 5: Actor
+        /// - 6: Event facing direction
+        /// - 7: Vehicle
+        /// - 8: Decision key was pressed
+        /// - 9: BGM looped
         mode: u32,
-        index: u32,
-        /// - Facing:
-        ///   - 0: Up
-        ///   - 1: Right
-        ///   - 2: Down
-        ///   - 3: Left
-        operator1: u32, // TODO
-        value: u32,
+        /// - Switch: switch id
+        /// - Variable: variable id
+        field1: u32,
+        /// - Switch:
+        ///   - 0: ON
+        ///   - 1: OFF
         /// - Variable:
         ///   - 0: ==
         ///   - 1: >=
         ///   - 2: <=
-        ///   - 3: >
+        ///   - 3: <
         ///   - 4: <
         ///   - 5: !=
-        operator2: u32, // TODO
+        /// - Event facing:
+        ///   - 0: Up
+        ///   - 1: Right
+        ///   - 2: Down
+        ///   - 3: Left
+        field2: u32,
+        field3: u32,
+        field4: u32,
         has_else: u32,
     },
 
@@ -836,6 +852,7 @@ pub enum Instruction {
     EndInn, // TODO
     #[br(pre_assert(opcode == 22010))]
     ElseBranch,
+    /// Added after the [`Self::End`] instruction at the last branch (the else branch if present, otherwise the if branch). Uses the outer indentation level.
     #[br(pre_assert(opcode == 22011))]
     EndBranch,
     #[br(pre_assert(opcode == 22210))]
@@ -991,6 +1008,16 @@ impl Instruction {
             Self::ElseBranchB => 23310,
             Self::EndBranchB => 23311,
             Self::Unknown { opcode, .. } => *opcode,
+        }
+    }
+
+    /// Indentation changes do not apply to the instruction causing them.
+    #[must_use]
+    pub const fn indentation_change(&self) -> i32 {
+        match self {
+            Self::ConditionalBranch { .. } | Self::ElseBranch => 1,
+            Self::End => -1,
+            _ => 0,
         }
     }
 }
