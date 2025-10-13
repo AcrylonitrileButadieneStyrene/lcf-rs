@@ -53,8 +53,15 @@ pub enum LcfMapUnitReadError {
     #[error("invalid animation type {0}")]
     InvalidAnimationType(u32),
 
+    #[error("missing event condition flags")]
+    MissingEventConditionFlags,
+
     #[error("contained unknown event instruction data. chunk: {0} bytes: {1:?}")]
     UnknownEventInstructionData(u32, Vec<u8>),
+    #[error("contained unknown event move route data. chunk: {0} bytes: {1:?}")]
+    UnknownEventMoveRouteData(u32, Vec<u8>),
+    #[error("contained unknown event condition data. chunk: {0} bytes: {1:?}")]
+    UnknownEventConditionData(u32, Vec<u8>),
     #[error("contained unknown event page data. chunk: {0} bytes: {1:?}")]
     UnknownEventPageData(u32, Vec<u8>),
     #[error("contained unknown event data. chunk: {0} bytes: {1:?}")]
@@ -104,7 +111,11 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                 LcfMapUnitChunk::Events { chunks } => {
                     value.events = chunks
                         .into_iter()
-                        .map(|(id, chunks)| Event::from_chunks(id.0, chunks.inner_vec))
+                        .map(|(id, chunks)| {
+                            let mut event = Event::default();
+                            event.id = id.0;
+                            event.with_chunks(chunks.inner_vec)
+                        })
                         .try_collect()?;
                 }
 

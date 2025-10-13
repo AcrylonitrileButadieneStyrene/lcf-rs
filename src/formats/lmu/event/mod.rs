@@ -16,32 +16,27 @@ pub struct Event {
 }
 
 impl Event {
-    pub fn from_chunks(
-        id: u32,
+    pub fn with_chunks(
+        mut self,
         chunks: Vec<Chunk<EventChunk>>,
     ) -> Result<Self, LcfMapUnitReadError> {
-        let mut value = Self {
-            id,
-            ..Default::default()
-        };
-
         for chunk in chunks {
             match chunk.data {
-                EventChunk::Name(bytes) => value.name = bytes,
-                EventChunk::PositionX(val) => value.x = val.0,
-                EventChunk::PositionY(val) => value.y = val.0,
+                EventChunk::Name(bytes) => self.name = bytes,
+                EventChunk::PositionX(val) => self.x = val.0,
+                EventChunk::PositionY(val) => self.y = val.0,
                 EventChunk::Pages { chunks } => {
-                    chunks.iter().enumerate().for_each(|(index, (page, _))| {
+                    chunks.iter().enumerate().for_each(|(index, (id, _))| {
                         debug_assert_eq!(
                             index,
-                            (page.0 - 1) as usize,
+                            id.0 as usize - 1,
                             "event page id must match index"
                         );
                     });
 
-                    value.pages = chunks
+                    self.pages = chunks
                         .into_iter()
-                        .map(|(_, chunks)| EventPage::from_chunks(chunks.inner_vec))
+                        .map(|(_, chunks)| EventPage::default().with_chunks(chunks))
                         .try_collect()?;
                 }
                 EventChunk::Unknown { id, bytes } => {
@@ -50,7 +45,7 @@ impl Event {
             }
         }
 
-        Ok(value)
+        Ok(self)
     }
 
     pub fn to_chunks(&self) -> (Number, Array<Chunk<EventChunk>>) {
@@ -63,11 +58,17 @@ impl Event {
         }
 
         if self.y != 0 {
-            chunks.push(EventChunk::PositionX(Number(self.y)));
+            chunks.push(EventChunk::PositionY(Number(self.y)));
         }
 
         chunks.push(EventChunk::Pages {
-            chunks: self.pages.iter().map(EventPage::to_chunks).collect(),
+            chunks: self
+                .pages
+                .iter()
+                .map(EventPage::to_chunks)
+                .enumerate()
+                .map(|(id, chunks)| (Number(id as u32 + 1), chunks))
+                .collect(),
         });
 
         (

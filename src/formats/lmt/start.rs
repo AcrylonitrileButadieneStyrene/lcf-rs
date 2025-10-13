@@ -1,5 +1,5 @@
 use crate::{
-    helpers::{Chunk, Maybe, Number},
+    helpers::{Array, Chunk, Maybe, Number},
     lmt::LcfMapTreeReadError,
     raw::lmt::start::StartChunk,
 };
@@ -47,7 +47,7 @@ impl Start {
         })
     }
 
-    pub fn to_chunks(&self) -> Vec<Chunk<StartChunk>> {
+    pub fn to_chunks(&self) -> Array<Chunk<StartChunk>> {
         let mut chunks = Vec::new();
 
         if let Some(position) = &self.party {
@@ -82,7 +82,10 @@ impl Start {
             ]);
         }
 
-        chunks.into_iter().map(Into::into).collect()
+        Array {
+            inner_vec: chunks.into_iter().map(Into::into).collect(),
+            null_terminated: true,
+        }
     }
 }
 

@@ -1,6 +1,14 @@
 #[repr(u32)]
 #[derive(
-    Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize, strum::FromRepr,
+    Clone,
+    Copy,
+    Debug,
+    Default,
+    PartialEq,
+    Eq,
+    serde::Serialize,
+    serde::Deserialize,
+    strum::FromRepr,
 )]
 pub enum Trigger {
     #[default]

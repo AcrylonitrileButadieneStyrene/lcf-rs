@@ -1,7 +1,4 @@
-use crate::{
-    helpers::{Array, Number},
-    raw::lmt::RawLcfMapTree,
-};
+use crate::{helpers::Number, raw::lmt::RawLcfMapTree};
 
 use serde::{Deserialize, Serialize};
 
@@ -77,10 +74,7 @@ impl From<&LcfMapTree> for RawLcfMapTree {
     fn from(value: &LcfMapTree) -> Self {
         Self {
             active: Number(value.active),
-            start: Array {
-                inner_vec: value.start.to_chunks(),
-                null_terminated: true,
-            },
+            start: value.start.to_chunks(),
             order: value.maps.iter().map(|(id, _)| Number(*id)).collect(),
             maps: {
                 let mut maps = value.maps.clone();

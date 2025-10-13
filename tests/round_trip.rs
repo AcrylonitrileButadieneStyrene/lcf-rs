@@ -1,3 +1,5 @@
+use std::io::Seek;
+
 #[test]
 fn raw_database_round_trip() {
     get_games().for_each(|game| {
@@ -23,6 +25,20 @@ fn raw_map_unit_round_trip() {
 fn raw_save_data_round_trip() {
     get_games().for_each(|game| {
         raw_round_trip::<lcf::raw::lsd::RawLcfSaveData>(&game.join(find_one(&game, "lsd")));
+    });
+}
+
+#[test]
+fn map_unit_recode_round_trip() {
+    get_games().for_each(|game| {
+        let bytes = std::fs::read(&game.join(find_one(&game, "lmu"))).unwrap();
+        let mut cursor = std::io::Cursor::new(bytes);
+        let before = lcf::lmu::LcfMapUnit::read(&mut cursor).unwrap();
+        let mut buffer = std::io::Cursor::new(Vec::new());
+        before.write(&mut buffer).unwrap();
+        buffer.rewind().unwrap();
+        let after = lcf::lmu::LcfMapUnit::read(&mut buffer).unwrap();
+        assert_eq!(before, after);
     });
 }
 

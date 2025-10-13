@@ -19,7 +19,7 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 5001))]
     OpenLoadMenu, // TODO
     #[br(pre_assert(opcode == 5002))]
-    ExitGame, // TODO
+    ExitGame,
     #[br(pre_assert(opcode == 5003))]
     ToggleAtbMode, // TODO
     #[br(pre_assert(opcode == 5004))]
@@ -137,11 +137,11 @@ pub enum Instruction {
         ///   - 14: Accessory ID
         /// - Event:
         ///   - 0: Map ID
-        ///   - 0: X
-        ///   - 0: Y
-        ///   - 0: Direction
-        ///   - 0: Screen X
-        ///   - 0: Screen Y
+        ///   - 1: X
+        ///   - 2: Y
+        ///   - 3: Direction
+        ///   - 4: Screen X
+        ///   - 5: Screen Y
         value2: u32,
     },
     #[br(pre_assert(opcode == 10230))]
@@ -785,9 +785,9 @@ pub enum Instruction {
         value: u32,
     },
     #[br(pre_assert(opcode == 12210))]
-    Loop, // TODO
+    Loop,
     #[br(pre_assert(opcode == 12220))]
-    BreakLoop, // TODO
+    BreakLoop,
     #[br(pre_assert(opcode == 12310))]
     EndEventProcessing,
     #[br(pre_assert(opcode == 12320))]
@@ -807,7 +807,7 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 12420))]
     GameOver, // TODO
     #[br(pre_assert(opcode == 12510))]
-    ReturntoTitleScreen, // TODO
+    ReturnToTitleScreen, // TODO
     #[br(pre_assert(opcode == 13110))]
     ChangeMonsterHP, // TODO
     #[br(pre_assert(opcode == 13120))]
@@ -856,7 +856,7 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 22011))]
     EndBranch,
     #[br(pre_assert(opcode == 22210))]
-    EndLoop, // TODO
+    EndLoop,
     #[br(pre_assert(opcode == 22410))]
     CommentNextLine, // TODO
     #[br(pre_assert(opcode == 23310))]
@@ -979,7 +979,7 @@ impl Instruction {
             Self::CallEvent { .. } => 12330,
             Self::Comment => 12410,
             Self::GameOver => 12420,
-            Self::ReturntoTitleScreen => 12510,
+            Self::ReturnToTitleScreen => 12510,
             Self::ChangeMonsterHP => 13110,
             Self::ChangeMonsterMP => 13120,
             Self::ChangeMonsterCondition => 13130,
