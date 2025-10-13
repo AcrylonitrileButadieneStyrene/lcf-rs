@@ -1,8 +1,3 @@
-#![warn(clippy::nursery)]
-#![warn(clippy::pedantic)]
-#![warn(clippy::cargo)]
-#![allow(clippy::missing_errors_doc)]
-#![allow(clippy::cast_possible_truncation)]
 #![feature(iterator_try_collect)]
 #![feature(iter_array_chunks)]
 

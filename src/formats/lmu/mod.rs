@@ -112,9 +112,11 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                     value.events = chunks
                         .into_iter()
                         .map(|(id, chunks)| {
-                            let mut event = Event::default();
-                            event.id = id.0;
-                            event.with_chunks(chunks.inner_vec)
+                            Event {
+                                id: id.0,
+                                ..Default::default()
+                            }
+                            .with_chunks(chunks.inner_vec)
                         })
                         .try_collect()?;
                 }
@@ -156,9 +158,7 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
             chunks.push(LcfMapUnitChunk::Height(val.height.into()));
         }
 
-        chunks.push(LcfMapUnitChunk::ScrollType(
-            (val.scroll_type.clone() as u32).into(),
-        ));
+        chunks.push(LcfMapUnitChunk::ScrollType((val.scroll_type as u32).into()));
 
         val.panorama.write_chunks(&mut chunks);
         chunks.push(LcfMapUnitChunk::Lower(val.lower.clone()));

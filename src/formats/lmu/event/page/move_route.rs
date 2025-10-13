@@ -24,7 +24,7 @@ impl MoveRoute {
                 EventMoveRouteChunk::Repeat(val) => self.repeat = val.0 != 0,
                 EventMoveRouteChunk::Skippable(val) => self.skippable = val.0 != 0,
                 EventMoveRouteChunk::Unknown { id, bytes } => {
-                    Err(LcfMapUnitReadError::UnknownEventMoveRouteData(id, bytes))?
+                    Err(LcfMapUnitReadError::UnknownEventMoveRouteData(id, bytes))?;
                 }
             }
         }
@@ -42,10 +42,10 @@ impl MoveRoute {
                 self.commands.len() as u32,
             )));
             chunks.push(EventMoveRouteChunk::Commands(self.commands.clone()));
-            chunks.push(EventMoveRouteChunk::Repeat(Number(self.repeat as u32)));
-            chunks.push(EventMoveRouteChunk::Skippable(Number(
-                self.skippable as u32,
-            )));
+            chunks.push(EventMoveRouteChunk::Repeat(Number(u32::from(self.repeat))));
+            chunks.push(EventMoveRouteChunk::Skippable(Number(u32::from(
+                self.skippable,
+            ))));
         }
 
         Array {

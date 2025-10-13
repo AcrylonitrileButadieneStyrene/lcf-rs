@@ -29,12 +29,12 @@ impl Condition {
             })
             .ok_or(LcfMapUnitReadError::MissingEventConditionFlags)?
             .0;
-        self.switch_a.0 = flags & 1 == 1;
-        self.switch_b.0 = flags & 2 == 1;
-        self.variable.0 = flags & 4 == 1;
-        self.item.0 = flags & 8 == 1;
-        self.actor.0 = flags & 16 == 1;
-        self.timer.0 = flags & 32 == 1;
+        self.switch_a.0 = flags & 1 != 0;
+        self.switch_b.0 = flags & 2 != 0;
+        self.variable.0 = flags & 4 != 0;
+        self.item.0 = flags & 8 != 0;
+        self.actor.0 = flags & 16 != 0;
+        self.timer.0 = flags & 32 != 0;
 
         for chunk in chunks.inner_vec {
             match chunk.data {
@@ -47,7 +47,7 @@ impl Condition {
                 EventPageConditionChunk::Actor(val) => self.actor.1 = val.0,
                 EventPageConditionChunk::Timer(val) => self.timer.1 = val.0,
                 EventPageConditionChunk::Unknown { id, bytes } => {
-                    Err(LcfMapUnitReadError::UnknownEventConditionData(id, bytes))?
+                    Err(LcfMapUnitReadError::UnknownEventConditionData(id, bytes))?;
                 }
             }
         }
@@ -57,12 +57,12 @@ impl Condition {
 
     pub fn to_chunks(&self) -> Array<Chunk<EventPageConditionChunk>> {
         let mut chunks = Vec::new();
-        let flags = (self.switch_a.0 as u32)
-            | (self.switch_b.0 as u32) << 1
-            | (self.variable.0 as u32) << 2
-            | (self.item.0 as u32) << 3
-            | (self.actor.0 as u32) << 4
-            | (self.timer.0 as u32) << 5;
+        let flags = u32::from(self.switch_a.0)
+            | u32::from(self.switch_b.0) << 1
+            | u32::from(self.variable.0) << 2
+            | u32::from(self.item.0) << 3
+            | u32::from(self.actor.0) << 4
+            | u32::from(self.timer.0) << 5;
         chunks.push(EventPageConditionChunk::Flags(Number(flags)));
 
         if self.switch_a.1 != 0 {

@@ -36,7 +36,7 @@ impl EventPage {
         for chunk in chunks.inner_vec {
             match chunk.data {
                 EventPageChunk::Condition(chunks) => {
-                    self.condition = self.condition.with_chunks(chunks)?
+                    self.condition = self.condition.with_chunks(chunks)?;
                 }
                 EventPageChunk::GraphicFile(bytes) => self.graphic.file = bytes,
                 EventPageChunk::GraphicIndex(val) => self.graphic.index = val.0,
@@ -87,9 +87,9 @@ impl EventPage {
         if self.graphic.pattern != 0 {
             chunks.push(EventPageChunk::GraphicPattern(Number(self.graphic.pattern)));
         }
-        chunks.push(EventPageChunk::GraphicTransparent(Number(
-            self.graphic.transparent as u32,
-        )));
+        chunks.push(EventPageChunk::GraphicTransparent(Number(u32::from(
+            self.graphic.transparent,
+        ))));
         chunks.push(EventPageChunk::MovementType(Number(self.movement.r#type)));
         if self.movement.frequency != 3 {
             chunks.push(EventPageChunk::MovementFrequency(Number(
@@ -99,7 +99,7 @@ impl EventPage {
         chunks.push(EventPageChunk::Trigger(Number(self.trigger as u32)));
         chunks.push(EventPageChunk::Priority(Number(self.priority as u32)));
         chunks.push(EventPageChunk::PriorityForbidEventOverlap(Number(
-            self.forbid_event_overlap as u32,
+            u32::from(self.forbid_event_overlap),
         )));
         chunks.push(EventPageChunk::AnimationType(Number(
             self.animation_type as u32,

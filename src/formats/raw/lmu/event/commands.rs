@@ -11,7 +11,8 @@ impl Commands {
         let mut indentation = 0;
         for command in &mut self.0 {
             command.indent = indentation;
-            indentation = ((indentation as i32) + command.instruction.indentation_change()) as u32;
+            indentation = (indentation.cast_signed() + command.instruction.indentation_change())
+                .cast_unsigned();
         }
     }
 }
