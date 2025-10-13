@@ -10,7 +10,7 @@ pub use move_route::MoveRoute;
 pub use movement::Movement;
 
 use crate::{
-    enums::{AnimationType, Priority, Trigger},
+    enums::{AnimationType, Direction, Priority, Trigger},
     helpers::{Array, Chunk, Number},
     lmu::LcfMapUnitReadError,
     raw::lmu::event::{command::Command, commands::Commands, page::EventPageChunk},
@@ -40,7 +40,9 @@ impl EventPage {
                 }
                 EventPageChunk::GraphicFile(bytes) => self.graphic.file = bytes,
                 EventPageChunk::GraphicIndex(val) => self.graphic.index = val.0,
-                EventPageChunk::GraphicDirection(val) => self.graphic.direction = val.0,
+                EventPageChunk::GraphicDirection(val) => {
+                    self.graphic.direction = Direction::from_repr(val.0).unwrap();
+                }
                 EventPageChunk::GraphicPattern(val) => self.graphic.pattern = val.0,
                 EventPageChunk::GraphicTransparent(val) => self.graphic.transparent = val.0 != 0,
                 EventPageChunk::MovementType(val) => self.movement.r#type = val.0,
@@ -77,12 +79,14 @@ impl EventPage {
     pub fn to_chunks(&self) -> Array<Chunk<EventPageChunk>> {
         let mut chunks = Vec::new();
         chunks.push(EventPageChunk::Condition(self.condition.to_chunks()));
-        chunks.push(EventPageChunk::GraphicFile(self.graphic.file.clone()));
+        if !self.graphic.file.is_empty() {
+            chunks.push(EventPageChunk::GraphicFile(self.graphic.file.clone()));
+        }
         if self.graphic.index != 0 {
             chunks.push(EventPageChunk::GraphicIndex(Number(self.graphic.index)));
         }
         chunks.push(EventPageChunk::GraphicDirection(Number(
-            self.graphic.direction,
+            self.graphic.direction as u32,
         )));
         if self.graphic.pattern != 0 {
             chunks.push(EventPageChunk::GraphicPattern(Number(self.graphic.pattern)));
@@ -104,7 +108,9 @@ impl EventPage {
         chunks.push(EventPageChunk::AnimationType(Number(
             self.animation_type as u32,
         )));
-        chunks.push(EventPageChunk::MoveSpeed(Number(self.movement.speed)));
+        if self.movement.speed != 3 {
+            chunks.push(EventPageChunk::MoveSpeed(Number(self.movement.speed)));
+        }
         chunks.push(EventPageChunk::MovementRoute(
             self.movement.route.to_chunks(),
         ));
@@ -112,7 +118,7 @@ impl EventPage {
         chunks.push(EventPageChunk::CommandsSize(Number({
             let mut buf = std::io::Cursor::new(Vec::new());
             self.commands.write(&mut buf).unwrap();
-            buf.into_inner().len() as u32
+            buf.into_inner().len() as u32 + 4
         })));
         chunks.push(EventPageChunk::Commands(Commands(self.commands.clone())));
 

@@ -757,19 +757,23 @@ pub enum Instruction {
         ///   - 0: ON
         ///   - 1: OFF
         /// - Variable:
-        ///   - 0: ==
-        ///   - 1: >=
-        ///   - 2: <=
-        ///   - 3: <
-        ///   - 4: <
-        ///   - 5: !=
+        ///   - 0: Constant
+        ///   - 1: Variable
         /// - Event facing:
         ///   - 0: Up
         ///   - 1: Right
         ///   - 2: Down
         ///   - 3: Left
         field2: u32,
+        /// - Variable: value
         field3: u32,
+        /// - Variable:
+        ///   - 0: ==
+        ///   - 1: >=
+        ///   - 2: <=
+        ///   - 3: <
+        ///   - 4: <
+        ///   - 5: !=
         field4: u32,
         has_else: u32,
     },

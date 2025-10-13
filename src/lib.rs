@@ -31,6 +31,7 @@
 //! let database = lcf::Lcf::read(&mut reader).expect("valid lcf file");
 //! assert!(matches!(database, lcf::Lcf::DataBase(_)))
 //! ```
+//! Additionally see [lcf-explorer](https://github.com/AcrylonitrileButadieneStyrene/lcf-explorer) and [d2k](https://github.com/AcrylonitrileButadieneStyrene/d2k) for full examples.
 
 mod macros;
 

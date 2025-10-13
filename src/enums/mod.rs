@@ -1,10 +1,12 @@
 mod animation_type;
+mod direction;
 mod priority;
 mod scroll_type;
 mod speed;
 mod trigger;
 
 pub use animation_type::AnimationType;
+pub use direction::Direction;
 pub use priority::Priority;
 pub use scroll_type::ScrollType;
 pub use speed::Speed;

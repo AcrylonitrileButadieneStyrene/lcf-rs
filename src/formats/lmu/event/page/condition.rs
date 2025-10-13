@@ -4,7 +4,7 @@ use crate::{
     raw::lmu::event::condition::EventPageConditionChunk,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct Condition {
     pub switch_a: (bool, u32),
     pub switch_b: (bool, u32),
@@ -13,6 +13,20 @@ pub struct Condition {
     pub item: (bool, u32),
     pub actor: (bool, u32),
     pub timer: (bool, u32),
+}
+
+impl Default for Condition {
+    fn default() -> Self {
+        Self {
+            switch_a: (false, 0),
+            switch_b: (false, 0),
+            variable: (false, 0),
+            value: 0,
+            item: (false, 0),
+            actor: (false, 1),
+            timer: (false, 0),
+        }
+    }
 }
 
 impl Condition {
@@ -77,7 +91,9 @@ impl Condition {
             chunks.push(EventPageConditionChunk::Variable(Number(self.variable.1)));
         }
 
-        chunks.push(EventPageConditionChunk::Value(Number(self.value)));
+        if self.value != 0 {
+            chunks.push(EventPageConditionChunk::Value(Number(self.value)));
+        }
 
         if self.item.1 != 0 {
             chunks.push(EventPageConditionChunk::Item(Number(self.item.1)));

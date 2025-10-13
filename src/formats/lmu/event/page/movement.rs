@@ -11,7 +11,7 @@ impl Default for Movement {
         Self {
             r#type: 0,
             frequency: 3,
-            speed: 4,
+            speed: 3,
             route: super::MoveRoute::default(),
         }
     }
