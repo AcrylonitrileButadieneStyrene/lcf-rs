@@ -6,28 +6,28 @@ pub enum Instruction {
     /// Added at the end of each branch (if and else), before the [`Self::EndBranch`] instruction. Uses the inner indentation level.
     #[br(pre_assert(opcode == 10))]
     End,
-    #[br(pre_assert(opcode == 1005))]
-    CallCommonEvent, // TODO
-    #[br(pre_assert(opcode == 1006))]
-    ForceFlee, // TODO
-    #[br(pre_assert(opcode == 1007))]
-    EnableCombo, // TODO
-    #[br(pre_assert(opcode == 1008))]
-    ChangeClass, // TODO
-    #[br(pre_assert(opcode == 1009))]
-    ChangeBattleCommands, // TODO
-    #[br(pre_assert(opcode == 5001))]
-    OpenLoadMenu, // TODO
+    // #[br(pre_assert(opcode == 1005))]
+    // CallCommonEvent, // TODO
+    //#[br(pre_assert(opcode == 1006))]
+    // ForceFlee, // TODO
+    //#[br(pre_assert(opcode == 1007))]
+    // EnableCombo, // TODO
+    //#[br(pre_assert(opcode == 1008))]
+    // ChangeClass, // TODO
+    //#[br(pre_assert(opcode == 1009))]
+    // ChangeBattleCommands, // TODO
+    //#[br(pre_assert(opcode == 5001))]
+    // OpenLoadMenu, // TODO
     #[br(pre_assert(opcode == 5002))]
     ExitGame,
-    #[br(pre_assert(opcode == 5003))]
-    ToggleAtbMode, // TODO
-    #[br(pre_assert(opcode == 5004))]
-    ToggleFullscreen, // TODO
-    #[br(pre_assert(opcode == 5005))]
-    OpenVideoOptions, // TODO
+    //#[br(pre_assert(opcode == 5003))]
+    // ToggleAtbMode, // TODO
+    //#[br(pre_assert(opcode == 5004))]
+    // ToggleFullscreen, // TODO
+    //#[br(pre_assert(opcode == 5005))]
+    // OpenVideoOptions, // TODO
     #[br(pre_assert(opcode == 10110))]
-    ShowMessage, // TODO
+    ShowMessage,
     #[br(pre_assert(opcode == 10120))]
     MessageOptions {
         /// - 0: Normal
@@ -193,8 +193,8 @@ pub enum Instruction {
         operand: u32,
         actor: u32,
     },
-    #[br(pre_assert(opcode == 10410))]
-    ChangeExp, // TODO
+    //#[br(pre_assert(opcode == 10410))]
+    // ChangeExp, // TODO
     #[br(pre_assert(opcode == 10420))]
     ChangeLevel {
         /// - 0: Entire party
@@ -262,12 +262,12 @@ pub enum Instruction {
         operand_or_type: u32,
         value: u32,
     },
-    #[br(pre_assert(opcode == 10460))]
-    ChangeHP, // TODO
-    #[br(pre_assert(opcode == 10470))]
-    ChangeSP, // TODO
-    #[br(pre_assert(opcode == 10480))]
-    ChangeCondition, // TODO
+    //#[br(pre_assert(opcode == 10460))]
+    // ChangeHP, // TODO
+    //#[br(pre_assert(opcode == 10470))]
+    // ChangeSP, // TODO
+    //#[br(pre_assert(opcode == 10480))]
+    // ChangeCondition, // TODO
     #[br(pre_assert(opcode == 10490))]
     RecoverAll {
         /// - 0: Entire Party
@@ -276,8 +276,8 @@ pub enum Instruction {
         operand: u32,
         value: u32,
     }, // TODO
-    #[br(pre_assert(opcode == 10500))]
-    SimulatedAttack, // TODO
+    //#[br(pre_assert(opcode == 10500))]
+    // SimulatedAttack, // TODO
     #[br(pre_assert(opcode == 10610))]
     ChangeActorName { actor: u32 },
     #[br(pre_assert(opcode == 10620))]
@@ -292,10 +292,10 @@ pub enum Instruction {
     },
     #[br(pre_assert(opcode == 10640))]
     ChangeActorFaceset { actor: u32, pattern: u32 },
-    #[br(pre_assert(opcode == 10650))]
-    ChangeVehicleGraphic, // TODO
-    #[br(pre_assert(opcode == 10660))]
-    ChangeSystemBGM, // TODO
+    //#[br(pre_assert(opcode == 10650))]
+    // ChangeVehicleGraphic, // TODO
+    //#[br(pre_assert(opcode == 10660))]
+    // ChangeSystemBGM, // TODO
     #[br(pre_assert(opcode == 10670))]
     ChangeSystemSE {
         /// - 0: Cursor
@@ -355,15 +355,15 @@ pub enum Instruction {
         /// - 20: Instantaneous/(not an option)
         value: u32,
     },
-    #[br(pre_assert(opcode == 10710))]
-    EnemyEncounter, // TODO
+    //#[br(pre_assert(opcode == 10710))]
+    // EnemyEncounter, // TODO
     #[br(pre_assert(opcode == 10720))]
     OpenShop {
         #[br(parse_with = binrw::helpers::until_eof)]
         args: Vec<u32>,
     }, // TODO
-    #[br(pre_assert(opcode == 10730))]
-    ShowInn, // TODO
+    //#[br(pre_assert(opcode == 10730))]
+    // ShowInn, // TODO
     #[br(pre_assert(opcode == 10740))]
     NameInputProcessing {
         actor: u32,
@@ -403,7 +403,7 @@ pub enum Instruction {
         y_variable: u32,
     },
     #[br(pre_assert(opcode == 10840))]
-    EnterExitVehicle, // TODO
+    GetOnOffVehicle,
     #[br(pre_assert(opcode == 10850))]
     SetVehicleLocation {
         /// - -1: Unknown
@@ -611,9 +611,9 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 11520))]
     FadeOutBGM { seconds: u32 },
     #[br(pre_assert(opcode == 11530))]
-    MemorizeBGM, // TODO
+    MemorizeCurrentBGM,
     #[br(pre_assert(opcode == 11540))]
-    PlayMemorizedBGM, // TODO
+    PlayMemorizedBGM,
     #[br(pre_assert(opcode == 11550))]
     PlaySoundEffect {
         /// - Unit: percentage
@@ -684,8 +684,8 @@ pub enum Instruction {
         /// - Range: -8 - 8
         vertical_auto_scroll_speed: u32,
     },
-    #[br(pre_assert(opcode == 11740))]
-    ChangeEncounterSteps, // TODO
+    //#[br(pre_assert(opcode == 11740))]
+    // ChangeEncounterSteps, // TODO
     #[br(pre_assert(opcode == 11750))]
     ChangeTile {
         is_upper: u32,
@@ -705,8 +705,8 @@ pub enum Instruction {
         switch_enabled: u32,
         switch: u32,
     },
-    #[br(pre_assert(opcode == 11820))]
-    ChangeTeleportAccess, // TODO
+    //#[br(pre_assert(opcode == 11820))]
+    // ChangeTeleportAccess, // TODO
     #[br(pre_assert(opcode == 11830))]
     SetEscapeLocation {
         map: u32,
@@ -729,7 +729,7 @@ pub enum Instruction {
         state: u32,
     }, // TODO
     #[br(pre_assert(opcode == 11950))]
-    OpenMainMenu, // TODO
+    OpenMainMenu,
     #[br(pre_assert(opcode == 11960))]
     ChangeMenuAccess {
         /// - Type: bool
@@ -807,53 +807,53 @@ pub enum Instruction {
     },
 
     #[br(pre_assert(opcode == 12410))]
-    Comment, // TODO
+    Comment,
     #[br(pre_assert(opcode == 12420))]
-    GameOver, // TODO
+    GameOver,
     #[br(pre_assert(opcode == 12510))]
-    ReturnToTitleScreen, // TODO
-    #[br(pre_assert(opcode == 13110))]
-    ChangeMonsterHP, // TODO
-    #[br(pre_assert(opcode == 13120))]
-    ChangeMonsterMP, // TODO
-    #[br(pre_assert(opcode == 13130))]
-    ChangeMonsterCondition, // TODO
-    #[br(pre_assert(opcode == 13150))]
-    ShowHiddenMonster, // TODO
-    #[br(pre_assert(opcode == 13210))]
-    ChangeBattleBG, // TODO
-    #[br(pre_assert(opcode == 13260))]
-    ShowBattleAnimationB, // TODO
-    #[br(pre_assert(opcode == 13310))]
-    ConditionalBranchB, // TODO
-    #[br(pre_assert(opcode == 13410))]
-    TerminateBattle, // TODO
+    ReturnToTitleScreen,
+    //#[br(pre_assert(opcode == 13110))]
+    // ChangeMonsterHP, // TODO
+    //#[br(pre_assert(opcode == 13120))]
+    // ChangeMonsterMP, // TODO
+    //#[br(pre_assert(opcode == 13130))]
+    // ChangeMonsterCondition, // TODO
+    //#[br(pre_assert(opcode == 13150))]
+    // ShowHiddenMonster, // TODO
+    //#[br(pre_assert(opcode == 13210))]
+    // ChangeBattleBG, // TODO
+    //#[br(pre_assert(opcode == 13260))]
+    // ShowBattleAnimationB, // TODO
+    //#[br(pre_assert(opcode == 13310))]
+    // ConditionalBranchB, // TODO
+    //#[br(pre_assert(opcode == 13410))]
+    // TerminateBattle, // TODO
     #[br(pre_assert(opcode == 20110))]
-    ShowMessage2, // TODO
+    ShowMessageNextLine,
     #[br(pre_assert(opcode == 20140))]
     ShowChoiceOption { index: u32 },
     #[br(pre_assert(opcode == 20141))]
     ShowChoiceEnd, // TODO
-    #[br(pre_assert(opcode == 20710))]
-    VictoryHandler, // TODO
-    #[br(pre_assert(opcode == 20711))]
-    EscapeHandler, // TODO
-    #[br(pre_assert(opcode == 20712))]
-    DefeatHandler, // TODO
-    #[br(pre_assert(opcode == 20713))]
-    EndBattle, // TODO
-    #[br(pre_assert(opcode == 20720))]
-    Transaction, // TODO
-    #[br(pre_assert(opcode == 20721))]
-    NoTransaction, // TODO
-    #[br(pre_assert(opcode == 20722))]
-    EndShop, // TODO
-    #[br(pre_assert(opcode == 20730))]
-    Stay, // TODO
-    #[br(pre_assert(opcode == 20731))]
-    NoStay, // TODO
-    #[br(pre_assert(opcode == 20732))]
-    EndInn, // TODO
+    //#[br(pre_assert(opcode == 20710))]
+    // VictoryHandler, // TODO
+    //#[br(pre_assert(opcode == 20711))]
+    // EscapeHandler, // TODO
+    //#[br(pre_assert(opcode == 20712))]
+    // DefeatHandler, // TODO
+    //#[br(pre_assert(opcode == 20713))]
+    // EndBattle, // TODO
+    //#[br(pre_assert(opcode == 20720))]
+    // Transaction, // TODO
+    //#[br(pre_assert(opcode == 20721))]
+    // NoTransaction, // TODO
+    //#[br(pre_assert(opcode == 20722))]
+    // EndShop, // TODO
+    //#[br(pre_assert(opcode == 20730))]
+    // Stay, // TODO
+    //#[br(pre_assert(opcode == 20731))]
+    // NoStay, // TODO
+    //#[br(pre_assert(opcode == 20732))]
+    // EndInn, // TODO
     #[br(pre_assert(opcode == 22010))]
     ElseBranch,
     /// Added after the [`Self::End`] instruction at the last branch (the else branch if present, otherwise the if branch). Uses the outer indentation level.
@@ -862,12 +862,11 @@ pub enum Instruction {
     #[br(pre_assert(opcode == 22210))]
     EndLoop,
     #[br(pre_assert(opcode == 22410))]
-    CommentNextLine, // TODO
-    #[br(pre_assert(opcode == 23310))]
-    ElseBranchB, // TODO
-    #[br(pre_assert(opcode == 23311))]
-    EndBranchB, // TODO
-
+    CommentNextLine,
+    //#[br(pre_assert(opcode == 23310))]
+    // ElseBranchB, // TODO
+    //#[br(pre_assert(opcode == 23311))]
+    // EndBranchB, // TODO
     Unknown {
         #[br(calc = opcode)]
         #[bw(ignore)]
@@ -884,16 +883,16 @@ impl Instruction {
     pub const fn opcode(&self) -> u32 {
         match self {
             Self::End => 10,
-            Self::CallCommonEvent => 1005,
-            Self::ForceFlee => 1006,
-            Self::EnableCombo => 1007,
-            Self::ChangeClass => 1008,
-            Self::ChangeBattleCommands => 1009,
-            Self::OpenLoadMenu => 5001,
+            // Self::CallCommonEvent => 1005,
+            // Self::ForceFlee => 1006,
+            // Self::EnableCombo => 1007,
+            // Self::ChangeClass => 1008,
+            // Self::ChangeBattleCommands => 1009,
+            // Self::OpenLoadMenu => 5001,
             Self::ExitGame => 5002,
-            Self::ToggleAtbMode => 5003,
-            Self::ToggleFullscreen => 5004,
-            Self::OpenVideoOptions => 5005,
+            // Self::ToggleAtbMode => 5003,
+            // Self::ToggleFullscreen => 5004,
+            // Self::OpenVideoOptions => 5005,
             Self::ShowMessage => 10110,
             Self::MessageOptions { .. } => 10120,
             Self::ChangeFaceset { .. } => 10130,
@@ -905,33 +904,33 @@ impl Instruction {
             Self::ChangeGold { .. } => 10310,
             Self::ChangeItems { .. } => 10320,
             Self::ChangePartyMembers { .. } => 10330,
-            Self::ChangeExp => 10410,
+            // Self::ChangeExp => 10410,
             Self::ChangeLevel { .. } => 10420,
             Self::ChangeParameters { .. } => 10430,
             Self::ChangeSkills { .. } => 10440,
             Self::ChangeEquipment { .. } => 10450,
-            Self::ChangeHP => 10460,
-            Self::ChangeSP => 10470,
-            Self::ChangeCondition => 10480,
+            // Self::ChangeHP => 10460,
+            // Self::ChangeSP => 10470,
+            // Self::ChangeCondition => 10480,
             Self::RecoverAll { .. } => 10490,
-            Self::SimulatedAttack => 10500,
+            // Self::SimulatedAttack => 10500,
             Self::ChangeActorName { .. } => 10610,
             Self::ChangeActorNickname { .. } => 10620,
             Self::ChangeActorGraphic { .. } => 10630,
             Self::ChangeActorFaceset { .. } => 10640,
-            Self::ChangeVehicleGraphic => 10650,
-            Self::ChangeSystemBGM => 10660,
+            // Self::ChangeVehicleGraphic => 10650,
+            // Self::ChangeSystemBGM => 10660,
             Self::ChangeSystemSE { .. } => 10670,
             Self::ChangeSystemGraphics { .. } => 10680,
             Self::ChangeScreenTransitions { .. } => 10690,
-            Self::EnemyEncounter => 10710,
+            // Self::EnemyEncounter => 10710,
             Self::OpenShop { .. } => 10720,
-            Self::ShowInn => 10730,
+            // Self::ShowInn => 10730,
             Self::NameInputProcessing { .. } => 10740,
             Self::TransferPlayer { .. } => 10810,
             Self::GetPlayerLocation { .. } => 10820,
             Self::MoveToVariableLocation { .. } => 10830,
-            Self::EnterExitVehicle => 10840,
+            Self::GetOnOffVehicle => 10840,
             Self::SetVehicleLocation { .. } => 10850,
             Self::SetEventLocation { .. } => 10860,
             Self::SwapEventLocation { .. } => 10870,
@@ -956,17 +955,17 @@ impl Instruction {
             Self::Wait { .. } => 11410,
             Self::PlayBGM { .. } => 11510,
             Self::FadeOutBGM { .. } => 11520,
-            Self::MemorizeBGM => 11530,
+            Self::MemorizeCurrentBGM => 11530,
             Self::PlayMemorizedBGM => 11540,
             Self::PlaySoundEffect { .. } => 11550,
             Self::PlayMovie { .. } => 11560,
             Self::KeyInputProcessing { .. } => 11610,
             Self::ChangeMapTileset { .. } => 11710,
             Self::ChangeParallaxBackground { .. } => 11720,
-            Self::ChangeEncounterSteps => 11740,
+            // Self::ChangeEncounterSteps => 11740,
             Self::ChangeTile { .. } => 11750,
             Self::SetTeleportPoint { .. } => 11810,
-            Self::ChangeTeleportAccess => 11820,
+            // Self::ChangeTeleportAccess => 11820,
             Self::SetEscapeLocation { .. } => 11830,
             Self::ChangeEscapeAccess { .. } => 11840,
             Self::OpenSaveMenu => 11910,
@@ -984,33 +983,33 @@ impl Instruction {
             Self::Comment => 12410,
             Self::GameOver => 12420,
             Self::ReturnToTitleScreen => 12510,
-            Self::ChangeMonsterHP => 13110,
-            Self::ChangeMonsterMP => 13120,
-            Self::ChangeMonsterCondition => 13130,
-            Self::ShowHiddenMonster => 13150,
-            Self::ChangeBattleBG => 13210,
-            Self::ShowBattleAnimationB => 13260,
-            Self::ConditionalBranchB => 13310,
-            Self::TerminateBattle => 13410,
-            Self::ShowMessage2 => 20110,
+            // Self::ChangeMonsterHP => 13110,
+            // Self::ChangeMonsterMP => 13120,
+            // Self::ChangeMonsterCondition => 13130,
+            // Self::ShowHiddenMonster => 13150,
+            // Self::ChangeBattleBG => 13210,
+            // Self::ShowBattleAnimationB => 13260,
+            // Self::ConditionalBranchB => 13310,
+            // Self::TerminateBattle => 13410,
+            Self::ShowMessageNextLine => 20110,
             Self::ShowChoiceOption { .. } => 20140,
             Self::ShowChoiceEnd => 20141,
-            Self::VictoryHandler => 20710,
-            Self::EscapeHandler => 20711,
-            Self::DefeatHandler => 20712,
-            Self::EndBattle => 20713,
-            Self::Transaction => 20720,
-            Self::NoTransaction => 20721,
-            Self::EndShop => 20722,
-            Self::Stay => 20730,
-            Self::NoStay => 20731,
-            Self::EndInn => 20732,
+            // Self::VictoryHandler => 20710,
+            // Self::EscapeHandler => 20711,
+            // Self::DefeatHandler => 20712,
+            // Self::EndBattle => 20713,
+            // Self::Transaction => 20720,
+            // Self::NoTransaction => 20721,
+            // Self::EndShop => 20722,
+            // Self::Stay => 20730,
+            // Self::NoStay => 20731,
+            // Self::EndInn => 20732,
             Self::ElseBranch => 22010,
             Self::EndBranch => 22011,
             Self::EndLoop => 22210,
             Self::CommentNextLine => 22410,
-            Self::ElseBranchB => 23310,
-            Self::EndBranchB => 23311,
+            // Self::ElseBranchB => 23310,
+            // Self::EndBranchB => 23311,
             Self::Unknown { opcode, .. } => *opcode,
         }
     }
@@ -1019,7 +1018,7 @@ impl Instruction {
     #[must_use]
     pub const fn indentation_change(&self) -> i32 {
         match self {
-            Self::ConditionalBranch { .. } | Self::ElseBranch => 1,
+            Self::ConditionalBranch { .. } | Self::ElseBranch | Self::Loop => 1,
             Self::End => -1,
             _ => 0,
         }
