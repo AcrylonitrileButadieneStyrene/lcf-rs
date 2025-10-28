@@ -108,8 +108,9 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                 }
                 LcfMapUnitChunk::Lower(items) => value.lower = items,
                 LcfMapUnitChunk::Upper(items) => value.upper = items,
-                LcfMapUnitChunk::Events { chunks } => {
+                LcfMapUnitChunk::Events(chunks) => {
                     value.events = chunks
+                        .inner_vec
                         .into_iter()
                         .map(|(id, chunks)| {
                             Event {
@@ -163,9 +164,9 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
         val.panorama.write_chunks(&mut chunks);
         chunks.push(LcfMapUnitChunk::Lower(val.lower.clone()));
         chunks.push(LcfMapUnitChunk::Upper(val.upper.clone()));
-        chunks.push(LcfMapUnitChunk::Events {
-            chunks: val.events.iter().map(Event::to_chunks).collect(),
-        });
+        chunks.push(LcfMapUnitChunk::Events(
+            val.events.iter().map(Event::to_chunks).collect(),
+        ));
 
         chunks.push(LcfMapUnitChunk::SaveTime(val.save_time.into()));
 

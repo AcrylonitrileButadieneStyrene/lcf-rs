@@ -8,14 +8,7 @@ pub trait ToChunkID {
 
 #[binrw::binrw]
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Chunk<T>
-where
-    T: for<'a> binrw::BinRead<Args<'a> = (u32, u32)>
-        + binrw::meta::ReadEndian
-        + for<'a> binrw::BinWrite<Args<'a>: Default>
-        + binrw::meta::WriteEndian
-        + ToChunkID,
-{
+pub struct Chunk<T: ChunkTraitBounds> {
     #[br(temp)]
     #[bw(calc = Number(data.id()))]
     pub id: Number,
@@ -31,7 +24,7 @@ where
     #[br(calc = {
         let mut cursor = std::io::Cursor::new(&read_bytes);
         let value = T::read_args(&mut cursor, (id.0, read_length.0))?;
-        debug_assert_eq!(cursor.position() as u32, read_length.0);
+        debug_assert_eq!(cursor.position() as u32, read_length.0, "chunk {}", id.0);
         value
     })]
     #[bw(write_with = write_data)]
@@ -59,15 +52,49 @@ where
     Ok(())
 }
 
-impl<T> From<T> for Chunk<T>
-where
+impl<T: ChunkTraitBounds> From<T> for Chunk<T> {
+    fn from(value: T) -> Self {
+        Self { data: value }
+    }
+}
+
+#[binrw::binrw]
+#[derive(Clone, Debug)]
+#[brw(little)]
+#[br(import(id: u32, length: u32))]
+pub enum UnknownChunk {
+    Unknown {
+        #[br(calc = id)]
+        #[bw(ignore)]
+        id: u32,
+
+        #[br(count = length)]
+        bytes: Vec<u8>,
+    },
+}
+
+impl ToChunkID for UnknownChunk {
+    fn id(&self) -> u32 {
+        match self {
+            Self::Unknown { id, .. } => *id,
+        }
+    }
+}
+
+pub trait ChunkTraitBounds:
+    for<'a> binrw::BinRead<Args<'a> = (u32, u32)>
+    + binrw::meta::ReadEndian
+    + for<'a> binrw::BinWrite<Args<'a>: Default>
+    + binrw::meta::WriteEndian
+    + ToChunkID
+{
+}
+
+impl<T> ChunkTraitBounds for T where
     T: for<'a> binrw::BinRead<Args<'a> = (u32, u32)>
         + binrw::meta::ReadEndian
         + for<'a> binrw::BinWrite<Args<'a>: Default>
         + binrw::meta::WriteEndian
-        + ToChunkID,
+        + ToChunkID
 {
-    fn from(value: T) -> Self {
-        Self { data: value }
-    }
 }

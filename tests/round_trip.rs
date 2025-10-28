@@ -29,6 +29,20 @@ fn raw_save_data_round_trip() {
 }
 
 #[test]
+fn database_recode_round_trip() {
+    get_games().for_each(|game| {
+        let bytes = std::fs::read(&game.join("RPG_RT.ldb")).unwrap();
+        let mut cursor = std::io::Cursor::new(bytes);
+        let before = lcf::ldb::LcfDataBase::read(&mut cursor).unwrap();
+        let mut buffer = std::io::Cursor::new(Vec::new());
+        before.write(&mut buffer).unwrap();
+        buffer.rewind().unwrap();
+        let after = lcf::ldb::LcfDataBase::read(&mut buffer).unwrap();
+        assert_eq!(before, after);
+    });
+}
+
+#[test]
 fn map_unit_recode_round_trip() {
     get_games().for_each(|game| {
         let bytes = std::fs::read(&game.join(find_one(&game, "lmu"))).unwrap();

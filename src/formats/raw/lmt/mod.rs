@@ -1,4 +1,4 @@
-use crate::helpers::{Array, Chunk, Number};
+use crate::helpers::{Array, Array2D, Chunk, Number};
 
 pub mod bgm;
 pub mod map;
@@ -8,12 +8,7 @@ pub mod start;
 #[brw(magic(b"\x0aLcfMapTree"), little)]
 #[derive(Clone, Debug)]
 pub struct RawLcfMapTree {
-    #[br(temp)]
-    #[bw(calc = Number(maps.len() as u32))]
-    maps_count: Number,
-
-    #[br(count = maps_count.0)]
-    pub maps: Vec<(Number, Array<Chunk<map::MapChunk>>)>,
+    pub maps: Array2D<map::MapChunk>,
 
     #[br(temp)]
     #[bw(calc = Number(order.len() as u32))]

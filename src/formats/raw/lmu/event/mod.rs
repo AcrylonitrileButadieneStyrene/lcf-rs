@@ -1,4 +1,4 @@
-use crate::helpers::{Array, Chunk, Number, ToChunkID};
+use crate::helpers::{Array2D, Number, ToChunkID};
 
 pub mod command;
 pub mod commands;
@@ -8,7 +8,7 @@ pub mod move_route;
 pub mod page;
 
 #[binrw::binrw]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug)]
 #[brw(little)]
 #[br(import(id: u32, length: u32))]
 pub enum EventChunk {
@@ -22,13 +22,7 @@ pub enum EventChunk {
     PositionY(Number),
 
     #[br(pre_assert(id == 5))]
-    Pages {
-        #[bw(calc = Number(chunks.len() as u32))]
-        count: Number,
-
-        #[br(count = count.0)]
-        chunks: Vec<(Number, Array<Chunk<page::EventPageChunk>>)>,
-    },
+    Pages(Array2D<page::EventPageChunk>),
 
     Unknown {
         #[br(calc = id)]

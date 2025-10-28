@@ -16,7 +16,6 @@ impl MoveRoute {
         mut self,
         chunks: Array<Chunk<EventMoveRouteChunk>>,
     ) -> Result<Self, LcfMapUnitReadError> {
-        dbg!(chunks.null_terminated);
         for chunk in chunks.inner_vec {
             match chunk.data {
                 EventMoveRouteChunk::CommandsSize(_) => (),

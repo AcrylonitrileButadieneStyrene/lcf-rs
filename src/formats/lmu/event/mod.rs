@@ -25,18 +25,23 @@ impl Event {
                 EventChunk::Name(bytes) => self.name = bytes,
                 EventChunk::PositionX(val) => self.x = val.0,
                 EventChunk::PositionY(val) => self.y = val.0,
-                EventChunk::Pages { chunks } => {
-                    chunks.iter().enumerate().for_each(|(index, (id, _))| {
-                        debug_assert_eq!(
-                            index,
-                            id.0 as usize - 1,
-                            "event page id must match index"
-                        );
-                    });
+                EventChunk::Pages(chunks) => {
+                    chunks
+                        .inner_vec
+                        .iter()
+                        .enumerate()
+                        .for_each(|(index, (id, _))| {
+                            debug_assert_eq!(
+                                index,
+                                id.0 as usize - 1,
+                                "event page id must match index"
+                            );
+                        });
 
                     self.pages = chunks
+                        .inner_vec
                         .into_iter()
-                        .map(|(_, chunks)| EventPage::default().with_chunks(chunks))
+                        .map(|(_, item)| EventPage::default().with_chunks(item))
                         .try_collect()?;
                 }
                 EventChunk::Unknown { id, bytes } => {
@@ -61,15 +66,14 @@ impl Event {
             chunks.push(EventChunk::PositionY(Number(self.y)));
         }
 
-        chunks.push(EventChunk::Pages {
-            chunks: self
-                .pages
+        chunks.push(EventChunk::Pages(
+            self.pages
                 .iter()
                 .map(EventPage::to_chunks)
                 .enumerate()
                 .map(|(id, chunks)| (Number(id as u32 + 1), chunks))
                 .collect(),
-        });
+        ));
 
         (
             Number(self.id),

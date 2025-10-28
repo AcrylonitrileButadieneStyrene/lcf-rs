@@ -1,4 +1,4 @@
-use crate::helpers::{Array, Chunk, Number, ToChunkID};
+use crate::helpers::{Array, Array2D, Chunk, Number, ToChunkID};
 
 pub mod event;
 
@@ -70,13 +70,7 @@ pub enum LcfMapUnitChunk {
     Upper(#[br(count = length / 2)] Vec<u16>),
 
     #[br(pre_assert(id == 81))]
-    Events {
-        #[bw(calc = Number(chunks.len() as u32))]
-        count: Number,
-
-        #[br(count = count.0)]
-        chunks: Vec<(Number, Array<Chunk<event::EventChunk>>)>,
-    },
+    Events(Array2D<event::EventChunk>),
 
     #[br(pre_assert(id == 91))]
     SaveTime(Number),

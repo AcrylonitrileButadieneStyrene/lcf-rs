@@ -30,32 +30,34 @@ fn find_unknown_instructions() {
                         .inner_vec
                         .into_iter()
                         .find_map(|chunk| match chunk.data {
-                            lcf::raw::lmu::LcfMapUnitChunk::Events { chunks } => {
-                                Some((map.clone(), chunks))
+                            lcf::raw::lmu::LcfMapUnitChunk::Events(events) => {
+                                Some((map.clone(), events))
                             }
                             _ => None,
                         })
                 })
                 .flat_map(|(map, chunks)| {
                     chunks
+                        .inner_vec
                         .into_iter()
-                        .filter_map(|(event, chunks)| {
+                        .filter_map(|(id, chunks)| {
                             chunks
                                 .inner_vec
                                 .into_iter()
                                 .find_map(|chunk| match chunk.data {
-                                    EventChunk::Pages { chunks } => Some((event.0, chunks)),
+                                    EventChunk::Pages(pages) => Some((id.0, pages)),
                                     _ => None,
                                 })
                         })
                         .flat_map(|(event, pages)| {
                             pages
+                                .inner_vec
                                 .into_iter()
-                                .filter_map(|(page, chunks)| {
+                                .filter_map(|(id, chunks)| {
                                     chunks.inner_vec.into_iter().find_map(|chunk| {
                                         match chunk.data {
                                             EventPageChunk::Commands(commands) => {
-                                                Some((page.0, commands))
+                                                Some((id.0, commands))
                                             }
                                             _ => None,
                                         }

@@ -43,11 +43,12 @@ impl TryFrom<RawLcfMapTree> for LcfMapTree {
     type Error = LcfMapTreeReadError;
 
     fn try_from(value: RawLcfMapTree) -> Result<Self, Self::Error> {
-        assert_eq!(value.maps.len(), value.order.len());
+        assert_eq!(value.maps.inner_vec.len(), value.order.len());
 
         // i think i had a better way of doing this before
         let mut basis = value
             .maps
+            .inner_vec
             .into_iter()
             .map(|(id, chunks)| {
                 Map::from_chunks(id.0, chunks.inner_vec).map(|map| Some((id.0, map)))

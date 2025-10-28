@@ -1,29 +1,4 @@
-use crate::helpers::{Array, Chunk, Number, ToChunkID};
-
-#[binrw::binrw]
-#[derive(Clone, Debug)]
-pub struct ChipSet {
-    #[br(temp)]
-    #[bw(calc = Number(data.len() as u32))]
-    count: Number,
-
-    #[br(count = count.0)]
-    pub data: Vec<ChipSetChunks>,
-}
-
-#[binrw::binrw]
-#[derive(Clone, Debug)]
-#[brw(little)]
-pub struct ChipSetChunks {
-    pub index: Number,
-    pub chunks: Array<Chunk<ChipSetChunk>>,
-}
-
-impl ToChunkID for ChipSetChunks {
-    fn id(&self) -> u32 {
-        self.index.0
-    }
-}
+use crate::helpers::Number;
 
 #[binrw::binrw]
 #[br(import(id: u32, length: u32))]
@@ -32,8 +7,24 @@ impl ToChunkID for ChipSetChunks {
 pub enum ChipSetChunk {
     #[br(pre_assert(id == 1))]
     Name(#[br(count = length)] Vec<u8>),
+
     #[br(pre_assert(id == 2))]
     File(#[br(count = length)] Vec<u8>),
+
+    #[br(pre_assert(id == 3))]
+    Terrain([u16; 162]),
+
+    #[br(pre_assert(id == 4))]
+    PassabilityLower([Number; 162]),
+
+    #[br(pre_assert(id == 5))]
+    PassabilityUpper([Number; 144]),
+
+    #[br(pre_assert(id == 11))]
+    AnimationType(Number),
+
+    #[br(pre_assert(id == 12))]
+    AnimationSpeed(Number),
 
     Unknown {
         #[br(calc = id)]
@@ -45,11 +36,16 @@ pub enum ChipSetChunk {
     },
 }
 
-impl ToChunkID for ChipSetChunk {
+impl crate::helpers::ToChunkID for ChipSetChunk {
     fn id(&self) -> u32 {
         match self {
             Self::Name(_) => 1,
             Self::File(_) => 2,
+            Self::Terrain(_) => 3,
+            Self::PassabilityLower(_) => 4,
+            Self::PassabilityUpper(_) => 5,
+            Self::AnimationType(_) => 11,
+            Self::AnimationSpeed(_) => 12,
             Self::Unknown { id, .. } => *id,
         }
     }
