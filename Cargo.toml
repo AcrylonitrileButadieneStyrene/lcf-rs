@@ -1,7 +1,6 @@
 [workspace]
 resolver = "3"
 members = ["examples/lcf-explorer"]
-package.exclude = ["examples/lcf-explorer"]
 
 [lints.clippy]
 nursery = { level = "warn", priority = -1 }
@@ -24,7 +23,7 @@ repository = "https://github.com/AcrylonitrileButadieneStyrene/lcf-rs"
 license = "MIT OR Apache-2.0"
 keywords = ["rpgmaker2000", "r2k", "lcf"]
 categories = ["encoding"]
-exclude = [".gitignore", ".gitmodules", "justfile", "tests/"]
+exclude = [".gitignore", ".gitmodules", "justfile", "tests/", "examples/"]
 
 [dependencies]
 binrw = "0.15.0"
