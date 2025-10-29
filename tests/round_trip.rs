@@ -1,4 +1,4 @@
-use std::io::Seek;
+use std::io::Seek as _;
 
 #[test]
 fn raw_database_round_trip() {
@@ -31,28 +31,27 @@ fn raw_save_data_round_trip() {
 #[test]
 fn database_recode_round_trip() {
     get_games().for_each(|game| {
-        let bytes = std::fs::read(&game.join("RPG_RT.ldb")).unwrap();
-        let mut cursor = std::io::Cursor::new(bytes);
-        let before = lcf::ldb::LcfDataBase::read(&mut cursor).unwrap();
-        let mut buffer = std::io::Cursor::new(Vec::new());
-        before.write(&mut buffer).unwrap();
-        buffer.rewind().unwrap();
-        let after = lcf::ldb::LcfDataBase::read(&mut buffer).unwrap();
-        assert_eq!(before, after);
+        recode_round_trip::<lcf::ldb::LcfDataBase>(&game.join("RPG_RT.ldb"));
     });
+}
+
+#[test]
+fn map_tree_recode_round_trip() {
+    get_games()
+        .for_each(|game| recode_round_trip::<lcf::lmt::LcfMapTree>(&game.join("RPG_RT.lmt")));
 }
 
 #[test]
 fn map_unit_recode_round_trip() {
     get_games().for_each(|game| {
-        let bytes = std::fs::read(&game.join(find_one(&game, "lmu"))).unwrap();
-        let mut cursor = std::io::Cursor::new(bytes);
-        let before = lcf::lmu::LcfMapUnit::read(&mut cursor).unwrap();
-        let mut buffer = std::io::Cursor::new(Vec::new());
-        before.write(&mut buffer).unwrap();
-        buffer.rewind().unwrap();
-        let after = lcf::lmu::LcfMapUnit::read(&mut buffer).unwrap();
-        assert_eq!(before, after);
+        recode_round_trip::<lcf::lmu::LcfMapUnit>(&game.join(find_one(&game, "lmu")));
+    });
+}
+
+#[test]
+fn save_data_recode_round_trip() {
+    get_games().for_each(|game| {
+        recode_round_trip::<lcf::lsd::LcfSaveData>(&game.join(find_one(&game, "lsd")));
     });
 }
 
@@ -84,4 +83,18 @@ where
     let mut buffer = std::io::Cursor::new(Vec::new());
     data.write(&mut buffer).unwrap();
     assert_eq!(cursor.into_inner(), buffer.into_inner());
+}
+
+fn recode_round_trip<T: lcf::ConvertExt + PartialEq + std::fmt::Debug>(path: &std::path::Path)
+where
+    <T as TryFrom<<T as lcf::ConvertExt>::Raw>>::Error: From<binrw::Error> + std::fmt::Debug,
+{
+    let bytes = std::fs::read(path).unwrap();
+    let mut cursor = std::io::Cursor::new(bytes);
+    let before = T::read(&mut cursor).unwrap();
+    let mut buffer = std::io::Cursor::new(Vec::new());
+    before.write(&mut buffer).unwrap();
+    buffer.rewind().unwrap();
+    let after = T::read(&mut buffer).unwrap();
+    assert_eq!(before, after);
 }

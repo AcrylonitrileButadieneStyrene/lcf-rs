@@ -1,3 +1,5 @@
+use lcf::ConvertExt as _;
+
 #[test]
 fn default_map() {
     let bytes = std::fs::read("tests/data/empty.lmu").unwrap();

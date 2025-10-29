@@ -22,15 +22,25 @@
 //! - [`crate::raw::lmu::RawLcfMapUnit`]
 //! - [`crate::raw::lsd::RawLcfSaveData`]
 //!
-//! All of the raw structs implement [`binrw::BinRead`] and [`binrw::BinWrite`].
+//! All of the raw structs implement [`binrw::BinRead`] and [`binrw::BinWrite`], as well as [`From`] and [`TryInto`] for their wrapper.
 //!
 //! ## Example
 //! ```no_run
+//! use lcf::ConvertExt as _; // Bring the conversion trait into scope for wrapper formats.
+//!
 //! let bytes = std::fs::read("RPG_RT.ldb").expect("file exists");
 //! let mut reader = std::io::Cursor::new(bytes);
 //! let database = lcf::Lcf::read(&mut reader).expect("valid lcf file");
 //! assert!(matches!(database, lcf::Lcf::DataBase(_)))
 //! ```
+//!
+//! ## Disclaimers
+//! - This crate is currently incomplete, some fields are left as uninterpreted byte arrays.
+//! - The raw structs can complete round trips successfully but the managed structs lose information.
+//! - RPG Maker 2003 features are entirely unsupported.
+//! - Save data is completely unimplemented.
+//!
+//! ---
 //!
 //! JavaScript bindings are available with [lcf-js](https://github.com/AcrylonitrileButadieneStyrene/lcf-js).
 //!
@@ -43,3 +53,6 @@ pub mod helpers;
 
 mod formats;
 pub use formats::*;
+
+mod traits;
+pub use traits::*;
