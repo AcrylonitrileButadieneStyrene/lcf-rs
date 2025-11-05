@@ -41,7 +41,8 @@ impl EventPage {
                 EventPageChunk::GraphicFile(bytes) => self.graphic.file = bytes,
                 EventPageChunk::GraphicIndex(val) => self.graphic.index = val.0,
                 EventPageChunk::GraphicDirection(val) => {
-                    self.graphic.direction = Direction::from_repr(val.0).unwrap();
+                    self.graphic.direction = Direction::try_from(val.0)
+                        .map_err(|_| LcfMapUnitReadError::InvalidDirection(val.0))?;
                 }
                 EventPageChunk::GraphicPattern(val) => self.graphic.pattern = val.0,
                 EventPageChunk::GraphicTransparent(val) => self.graphic.transparent = val.0 != 0,
@@ -49,19 +50,19 @@ impl EventPage {
                 EventPageChunk::MovementFrequency(val) => self.movement.frequency = val.0,
                 EventPageChunk::MovementRoute(_chunks) => (),
                 EventPageChunk::Trigger(val) => {
-                    self.trigger = Trigger::from_repr(val.0)
-                        .ok_or(LcfMapUnitReadError::InvalidTriggerType(val.0))?;
+                    self.trigger = Trigger::try_from(val.0)
+                        .map_err(|_| LcfMapUnitReadError::InvalidTriggerType(val.0))?;
                 }
                 EventPageChunk::Priority(val) => {
-                    self.priority = Priority::from_repr(val.0)
-                        .ok_or(LcfMapUnitReadError::InvalidPriorityType(val.0))?;
+                    self.priority = Priority::try_from(val.0)
+                        .map_err(|_| LcfMapUnitReadError::InvalidPriorityType(val.0))?;
                 }
                 EventPageChunk::PriorityForbidEventOverlap(val) => {
                     self.forbid_event_overlap = val.0 != 0;
                 }
                 EventPageChunk::AnimationType(val) => {
-                    self.animation_type = AnimationType::from_repr(val.0)
-                        .ok_or(LcfMapUnitReadError::InvalidAnimationType(val.0))?;
+                    self.animation_type = AnimationType::try_from(val.0)
+                        .map_err(|_| LcfMapUnitReadError::InvalidAnimationType(val.0))?;
                 }
                 EventPageChunk::MoveSpeed(val) => self.movement.speed = val.0,
                 EventPageChunk::CommandsSize(_) => (),

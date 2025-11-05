@@ -44,6 +44,8 @@ pub enum LcfMapUnitReadError {
     #[error("decode error: {0}")]
     Decode(#[from] binrw::Error),
 
+    #[error("invalid direction {0}")]
+    InvalidDirection(u32),
     #[error("invalid scroll type {0}")]
     InvalidScrollType(u32),
     #[error("invalid trigger type {0}")]
@@ -83,8 +85,8 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                 LcfMapUnitChunk::Width(number) => value.width = number.0,
                 LcfMapUnitChunk::Height(number) => value.height = number.0,
                 LcfMapUnitChunk::ScrollType(number) => {
-                    value.scroll_type = ScrollType::from_repr(number.0)
-                        .ok_or(LcfMapUnitReadError::InvalidScrollType(number.0))?;
+                    value.scroll_type = ScrollType::try_from(number.0)
+                        .map_err(|_| LcfMapUnitReadError::InvalidScrollType(number.0))?;
                 }
                 LcfMapUnitChunk::PanoramaEnabled(number) => value.panorama.enabled = number.0 != 0,
                 LcfMapUnitChunk::PanoramaFile(items) => value.panorama.file = Some(items.clone()),

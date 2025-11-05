@@ -8,7 +8,7 @@
     Eq,
     serde::Serialize,
     serde::Deserialize,
-    strum::FromRepr,
+    num_enum::TryFromPrimitive,
 )]
 pub enum Direction {
     Up = 0,

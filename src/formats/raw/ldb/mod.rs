@@ -1,8 +1,12 @@
-use crate::helpers::{Array, Array2D, Chunk, ToChunkID, UnknownChunk};
+use crate::{
+    helpers::{Array, Array2D, Chunk, RawChunk, ToChunkID, UnknownChunk},
+    raw::ldb::term::Term,
+};
 
 pub mod chipset;
 pub mod common_event;
 pub mod switch;
+pub mod term;
 pub mod variable;
 
 #[binrw::binrw]
@@ -36,7 +40,7 @@ pub enum LcfDataBaseChunk {
     #[br(pre_assert(id == 20))]
     ChipSet(Array2D<chipset::ChipSetChunk>),
     #[br(pre_assert(id == 21))]
-    Terms(Array<Chunk<UnknownChunk>>),
+    Terms(Array<RawChunk<Term>>),
     #[br(pre_assert(id == 22))]
     System(Array<Chunk<UnknownChunk>>),
     #[br(pre_assert(id == 23))]
@@ -45,8 +49,9 @@ pub enum LcfDataBaseChunk {
     Variables(Array2D<variable::VariableChunk>),
     #[br(pre_assert(id == 25))]
     CommonEvents(Array2D<common_event::CommonEventChunk>),
-    // for old r2k, this field is absent.
-    // for r2k3, this field is present but empty.
+    /// - r2k (pre migration): absent.
+    /// - r2k (post migration): constant 1.
+    /// - r2k3: present but empty.
     #[br(pre_assert(id == 26))]
     Version(#[br(count = length)] Vec<u8>),
 

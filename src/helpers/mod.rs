@@ -6,6 +6,6 @@ mod number;
 
 pub use array::Array;
 pub use array2d::Array2D;
-pub use chunk::{Chunk, ToChunkID, UnknownChunk};
+pub use chunk::{Chunk, RawChunk, ToChunkID, UnknownChunk};
 pub use maybe::Maybe;
 pub use number::Number;

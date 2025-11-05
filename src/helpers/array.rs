@@ -1,5 +1,8 @@
 use byteorder::ReadBytesExt as _;
 
+/// A specialized vec reads as much as it can, until it either hits a null terminator or runs out of data.
+/// 
+/// Remembers whether it stopped due to a null terminator or not to support round-trip compatibility.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Array<T> {
     pub inner_vec: Vec<T>,
