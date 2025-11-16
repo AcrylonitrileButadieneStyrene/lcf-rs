@@ -8,12 +8,15 @@ use crate::{
 pub mod event;
 mod panorama;
 
-pub use panorama::Panorama;
+pub use panorama::{Panorama, PanoramaOptions};
 
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct LcfMapUnit {
-    pub chipset: Option<u32>,
+    /// ID of the tileset to use for the upper and lower layers. Defaults to 1.
+    pub chipset: u32,
+    /// Width of the map in tiles. Minimum: 20 (size of screen). Maximum: 500.
     pub width: u32,
+    /// Height of the map in tiles. Minimum: 15 (size of screen). Maximum: 500.
     pub height: u32,
     pub scroll_type: ScrollType,
     pub panorama: Panorama,
@@ -26,7 +29,7 @@ pub struct LcfMapUnit {
 impl Default for LcfMapUnit {
     fn default() -> Self {
         Self {
-            chipset: None,
+            chipset: 1,
             width: 20,
             height: 15,
             scroll_type: ScrollType::default(),
@@ -81,7 +84,7 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
 
         for chunk in raw.0.inner_vec {
             match chunk.data {
-                LcfMapUnitChunk::ChipSet(number) => value.chipset = Some(number.0),
+                LcfMapUnitChunk::ChipSet(number) => value.chipset = number.0,
                 LcfMapUnitChunk::Width(number) => value.width = number.0,
                 LcfMapUnitChunk::Height(number) => value.height = number.0,
                 LcfMapUnitChunk::ScrollType(number) => {
@@ -91,22 +94,41 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                 LcfMapUnitChunk::PanoramaEnabled(number) => value.panorama.enabled = number.0 != 0,
                 LcfMapUnitChunk::PanoramaFile(items) => value.panorama.file = Some(items.clone()),
                 LcfMapUnitChunk::PanoramaHorizontalLoop(number) => {
-                    value.panorama.horizontal_loop = number.0 != 0;
-                }
-                LcfMapUnitChunk::PanoramaVerticalLoop(number) => {
-                    value.panorama.vertical_loop = number.0 != 0;
+                    if number.0 != 0 && matches!(value.panorama.horizontal, PanoramaOptions::NoLoop)
+                    {
+                        value.panorama.horizontal = PanoramaOptions::NoAutoscroll;
+                    }
                 }
                 LcfMapUnitChunk::PanoramaHorizontalAutoScroll(number) => {
-                    value.panorama.horizontal_auto_scroll = number.0 != 0;
+                    if number.0 != 0
+                        && matches!(
+                            value.panorama.horizontal,
+                            PanoramaOptions::NoLoop | PanoramaOptions::NoAutoscroll
+                        )
+                    {
+                        value.panorama.horizontal = PanoramaOptions::Autoscroll(0);
+                    }
                 }
                 LcfMapUnitChunk::PanoramaHorizontalAutoScrollSpeed(number) => {
-                    value.panorama.horizontal_auto_scroll_speed = number.0 as i32;
+                    value.panorama.horizontal = PanoramaOptions::Autoscroll(number.0 as i32);
+                }
+                LcfMapUnitChunk::PanoramaVerticalLoop(number) => {
+                    if number.0 != 0 && matches!(value.panorama.vertical, PanoramaOptions::NoLoop) {
+                        value.panorama.vertical = PanoramaOptions::NoAutoscroll;
+                    }
                 }
                 LcfMapUnitChunk::PanoramaVerticalAutoScroll(number) => {
-                    value.panorama.vertical_auto_scroll = number.0 != 0;
+                    if number.0 != 0
+                        && matches!(
+                            value.panorama.vertical,
+                            PanoramaOptions::NoLoop | PanoramaOptions::NoAutoscroll
+                        )
+                    {
+                        value.panorama.vertical = PanoramaOptions::Autoscroll(0);
+                    }
                 }
                 LcfMapUnitChunk::PanoramaVerticalAutoScrollSpeed(number) => {
-                    value.panorama.vertical_auto_scroll_speed = number.0 as i32;
+                    value.panorama.vertical = PanoramaOptions::Autoscroll(number.0 as i32);
                 }
                 LcfMapUnitChunk::Lower(items) => value.lower = items,
                 LcfMapUnitChunk::Upper(items) => value.upper = items,
@@ -149,8 +171,8 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
 
         let mut chunks = Vec::new();
 
-        if let Some(chipset) = val.chipset {
-            chunks.push(LcfMapUnitChunk::ChipSet(chipset.into()));
+        if val.chipset != 1 {
+            chunks.push(LcfMapUnitChunk::ChipSet(val.chipset.into()));
         }
 
         if val.width != 20 {

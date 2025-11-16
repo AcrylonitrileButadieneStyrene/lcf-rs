@@ -5,12 +5,20 @@ use crate::{helpers::Number, raw::lmu::LcfMapUnitChunk};
 pub struct Panorama {
     pub enabled: bool,
     pub file: Option<Vec<u8>>,
-    pub horizontal_loop: bool,
-    pub vertical_loop: bool,
-    pub horizontal_auto_scroll: bool,
-    pub horizontal_auto_scroll_speed: i32,
-    pub vertical_auto_scroll: bool,
-    pub vertical_auto_scroll_speed: i32,
+    /// If None, the panorama is fixed to the screen. (looping disabled)
+    /// If Some(None), the panorama can be moved and loops. (autoscroll disabled)
+    /// If Some(Some(x)), the panorama has autoscroll enabled with speed x. X can be 0.
+    pub horizontal: PanoramaOptions,
+    /// See documentation for [`Self::horizontal`]
+    pub vertical: PanoramaOptions,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub enum PanoramaOptions {
+    #[default]
+    NoLoop,
+    NoAutoscroll,
+    Autoscroll(i32),
 }
 
 impl Panorama {
@@ -26,32 +34,32 @@ impl Panorama {
             chunks.push(LcfMapUnitChunk::PanoramaFile(bytes.clone()));
         }
 
-        if self.horizontal_loop {
-            chunks.push(LcfMapUnitChunk::PanoramaHorizontalLoop(TRUE));
-        }
+        match self.horizontal {
+            PanoramaOptions::NoLoop => (),
+            PanoramaOptions::NoAutoscroll => {
+                chunks.push(LcfMapUnitChunk::PanoramaHorizontalLoop(TRUE));
+            }
+            PanoramaOptions::Autoscroll(speed) => {
+                chunks.push(LcfMapUnitChunk::PanoramaHorizontalLoop(TRUE));
+                chunks.push(LcfMapUnitChunk::PanoramaHorizontalAutoScroll(TRUE));
+                chunks.push(LcfMapUnitChunk::PanoramaHorizontalAutoScrollSpeed(Number(
+                    speed as u32,
+                )));
+            }
+        };
 
-        if self.vertical_loop {
-            chunks.push(LcfMapUnitChunk::PanoramaVerticalLoop(TRUE));
-        }
-
-        if self.horizontal_auto_scroll {
-            chunks.push(LcfMapUnitChunk::PanoramaHorizontalAutoScroll(TRUE));
-        }
-
-        if self.horizontal_auto_scroll_speed != 0 {
-            chunks.push(LcfMapUnitChunk::PanoramaHorizontalAutoScrollSpeed(Number(
-                self.horizontal_auto_scroll_speed as u32,
-            )));
-        }
-
-        if self.vertical_auto_scroll {
-            chunks.push(LcfMapUnitChunk::PanoramaVerticalAutoScroll(TRUE));
-        }
-
-        if self.vertical_auto_scroll_speed != 0 {
-            chunks.push(LcfMapUnitChunk::PanoramaVerticalAutoScrollSpeed(Number(
-                self.vertical_auto_scroll_speed as u32,
-            )));
-        }
+        match self.vertical {
+            PanoramaOptions::NoLoop => (),
+            PanoramaOptions::NoAutoscroll => {
+                chunks.push(LcfMapUnitChunk::PanoramaVerticalLoop(TRUE));
+            }
+            PanoramaOptions::Autoscroll(speed) => {
+                chunks.push(LcfMapUnitChunk::PanoramaVerticalLoop(TRUE));
+                chunks.push(LcfMapUnitChunk::PanoramaVerticalAutoScroll(TRUE));
+                chunks.push(LcfMapUnitChunk::PanoramaVerticalAutoScrollSpeed(Number(
+                    speed as u32,
+                )));
+            }
+        };
     }
 }
