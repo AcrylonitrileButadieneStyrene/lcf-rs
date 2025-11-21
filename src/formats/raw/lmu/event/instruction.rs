@@ -105,7 +105,7 @@ pub enum Instruction {
         /// - 6: Event
         /// - 7: Other
         operand: u32,
-        /// - Random: minimum value (included in sampled values)
+        /// - Random: minimum value
         /// - Other:
         ///   - 0: Money
         ///   - 1: Time remaining
@@ -117,7 +117,7 @@ pub enum Instruction {
         ///   - 7: Escape count
         ///   - 8: MIDI progress?
         value1: u32,
-        /// - Random: maximum value (not included in sampled values)
+        /// - Random: maximum value
         /// - Item: bool
         /// - Player:
         ///   - 0: Level
