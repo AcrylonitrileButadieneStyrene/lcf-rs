@@ -12,10 +12,10 @@
 )]
 pub enum Direction {
     Up = 0,
-    Left = 1,
-    Right = 2,
+    Right = 1,
     #[default]
-    Down = 3,
+    Down = 2,
+    Left = 3,
 }
 
 impl std::fmt::Display for Direction {

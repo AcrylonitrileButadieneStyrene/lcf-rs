@@ -8,7 +8,7 @@ cast_possible_truncation = "allow"
 
 [package]
 name = "lcf"
-version = "0.8.3"
+version = "0.8.4"
 edition = "2024"
 description = "Bidirectional parser for the lcf file format used by RPG Maker 2000 games"
 readme = "README.md"
@@ -16,7 +16,7 @@ repository = "https://github.com/AcrylonitrileButadieneStyrene/lcf-rs"
 license = "MIT OR Apache-2.0"
 keywords = ["rpgmaker2000", "r2k", "lcf"]
 categories = ["encoding"]
-exclude = [".gitignore", ".gitmodules", "justfile", "tests/", "examples/"]
+exclude = [".gitignore", "tests/"]
 
 [dependencies]
 binrw = "0.15.0"
