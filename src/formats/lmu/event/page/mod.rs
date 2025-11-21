@@ -89,7 +89,7 @@ impl EventPage {
         chunks.push(EventPageChunk::GraphicDirection(Number(
             self.graphic.direction as u32,
         )));
-        if self.graphic.pattern != 0 {
+        if self.graphic.pattern != 1 {
             chunks.push(EventPageChunk::GraphicPattern(Number(self.graphic.pattern)));
         }
         chunks.push(EventPageChunk::GraphicTransparent(Number(u32::from(

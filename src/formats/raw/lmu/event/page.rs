@@ -23,13 +23,17 @@ pub enum EventPageChunk {
     #[br(pre_assert(id == 22))]
     GraphicIndex(Number),
 
-    /// * 0: Up
-    /// * 1: Right
-    /// * 2: Down
-    /// * 3: Left
+    /// - Emitted always
+    /// - Values:
+    ///   - 0: Up
+    ///   - 1: Right
+    ///   - 2: Down
+    ///   - 3: Left
     #[br(pre_assert(id == 23))]
     GraphicDirection(Number),
 
+    // - Emitted when non-default
+    // - Default: 1
     #[br(pre_assert(id == 24))]
     GraphicPattern(Number),
 
