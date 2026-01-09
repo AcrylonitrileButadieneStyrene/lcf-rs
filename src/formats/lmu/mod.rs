@@ -18,11 +18,13 @@ pub struct LcfMapUnit {
     /// Width of the map in tiles.
     /// - Minimum: 20 (size of screen).
     /// - Maximum: 500.
+    ///
     /// Exceeding this range causes no problems.
     pub width: u32,
     /// Height of the map in tiles.
     /// - Minimum: 15 (size of screen).
     /// - Maximum: 500.
+    ///
     /// Exceeding this range causes no problems.
     pub height: u32,
     pub scroll_type: ScrollType,

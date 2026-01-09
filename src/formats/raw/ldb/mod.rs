@@ -28,13 +28,13 @@ pub enum LcfDataBaseChunk {
     #[br(pre_assert(id == 14))]
     Enemies(Array2D<UnknownChunk>),
     #[br(pre_assert(id == 15))]
-    Troops(Array<Chunk<UnknownChunk>>),
+    Troops(Array2D<UnknownChunk>),
     #[br(pre_assert(id == 16))]
     Terrain(#[br(count = length)] Vec<u8>),
     #[br(pre_assert(id == 17))]
     Attributes(Array<Chunk<UnknownChunk>>),
     #[br(pre_assert(id == 18))]
-    States(Array<Chunk<UnknownChunk>>),
+    States(Array2D<UnknownChunk>),
     #[br(pre_assert(id == 19))]
     Animations(#[br(count = length)] Vec<u8>),
     #[br(pre_assert(id == 20))]

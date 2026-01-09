@@ -4,10 +4,12 @@ use crate::{
 };
 
 pub mod chipset;
+pub mod common_event;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct LcfDataBase {
     pub chipsets: Vec<chipset::ChipSet>,
+    pub common_events: Vec<common_event::CommonEvent>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -16,6 +18,12 @@ pub enum LcfDataBaseReadError {
     Decode(#[from] binrw::Error),
     #[error("out of order array")]
     OutOfOrderArray,
+
+    #[error("invalid trigger type {0}")]
+    InvalidTriggerType(u32),
+
+    #[error("contained unknown common event data. chunk: {0} bytes: {1:?}")]
+    UnknownCommonEventData(u32, Vec<u8>),
     #[error("contained unknown data. chunk: {0} bytes: {1:?}")]
     UnknownData(u32, Vec<u8>),
 }
@@ -49,7 +57,17 @@ impl TryFrom<RawLcfDataBase> for LcfDataBase {
                 LcfDataBaseChunk::System(_) => (),
                 LcfDataBaseChunk::Switches(_) => (),
                 LcfDataBaseChunk::Variables(_) => (),
-                LcfDataBaseChunk::CommonEvents(_) => (),
+                LcfDataBaseChunk::CommonEvents(items) => {
+                    value.common_events = items
+                        .inner_vec
+                        .into_iter()
+                        .map(|(id, chunks)| {
+                            common_event::CommonEvent::default()
+                                .with_id(id.0)
+                                .with_chunks(chunks)
+                        })
+                        .try_collect()?;
+                }
                 LcfDataBaseChunk::Version(_) => (),
                 LcfDataBaseChunk::Unknown { id, bytes } => {
                     return Err(LcfDataBaseReadError::UnknownData(id, bytes));

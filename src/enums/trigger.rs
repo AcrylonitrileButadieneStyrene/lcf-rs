@@ -17,4 +17,6 @@ pub enum Trigger {
     EventTouch = 2,
     Autorun = 3,
     Parallel = 4,
+    /// Common Events only. Must be manually called.
+    None = 5,
 }

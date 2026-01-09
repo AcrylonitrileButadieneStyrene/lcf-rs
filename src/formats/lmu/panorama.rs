@@ -45,7 +45,7 @@ impl Panorama {
                     speed as u32,
                 )));
             }
-        };
+        }
 
         match self.vertical {
             PanoramaOptions::NoLoop => (),
@@ -59,6 +59,6 @@ impl Panorama {
                     speed as u32,
                 )));
             }
-        };
+        }
     }
 }
