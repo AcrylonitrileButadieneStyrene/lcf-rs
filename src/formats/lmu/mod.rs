@@ -12,15 +12,24 @@ pub use panorama::{Panorama, PanoramaOptions};
 
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct LcfMapUnit {
-    /// ID of the tileset to use for the upper and lower layers. Defaults to 1.
+    /// ID of the tileset to use for the upper and lower layers.
+    /// - Default: 1.
     pub chipset: u32,
-    /// Width of the map in tiles. Minimum: 20 (size of screen). Maximum: 500.
+    /// Width of the map in tiles.
+    /// - Minimum: 20 (size of screen).
+    /// - Maximum: 500.
+    /// Exceeding this range causes no problems.
     pub width: u32,
-    /// Height of the map in tiles. Minimum: 15 (size of screen). Maximum: 500.
+    /// Height of the map in tiles.
+    /// - Minimum: 15 (size of screen).
+    /// - Maximum: 500.
+    /// Exceeding this range causes no problems.
     pub height: u32,
     pub scroll_type: ScrollType,
     pub panorama: Panorama,
+    /// Length must match the [`Self::width`] * [`Self::height`]
     pub lower: Vec<u16>,
+    /// Length must match the [`Self::width`] * [`Self::height`]
     pub upper: Vec<u16>,
     pub events: Vec<Event>,
     pub save_time: u32,
@@ -159,16 +168,6 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
 
 impl From<&LcfMapUnit> for RawLcfMapUnit {
     fn from(val: &LcfMapUnit) -> Self {
-        assert!(val.width >= 20, "width too small");
-        assert!(val.width <= 500, "width too large");
-        assert!(val.height >= 15, "height too small");
-        assert!(val.height <= 500, "height too large");
-        assert_eq!(
-            val.upper.len(),
-            (val.width * val.height) as usize,
-            "incorrect amount of upper tiles"
-        );
-
         let mut chunks = Vec::new();
 
         if val.chipset != 1 {
@@ -186,8 +185,15 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
         chunks.push(LcfMapUnitChunk::ScrollType((val.scroll_type as u32).into()));
 
         val.panorama.write_chunks(&mut chunks);
-        chunks.push(LcfMapUnitChunk::Lower(val.lower.clone()));
-        chunks.push(LcfMapUnitChunk::Upper(val.upper.clone()));
+
+        let area = (val.width * val.height) as usize;
+        let mut lower = val.lower.clone();
+        let mut upper = val.upper.clone();
+        lower.resize(area, 0);
+        upper.resize(area, 10000);
+        chunks.push(LcfMapUnitChunk::Lower(lower));
+        chunks.push(LcfMapUnitChunk::Upper(upper));
+
         chunks.push(LcfMapUnitChunk::Events(
             val.events.iter().map(Event::to_chunks).collect(),
         ));

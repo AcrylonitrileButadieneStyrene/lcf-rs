@@ -5,19 +5,18 @@ use crate::{helpers::Number, raw::lmu::LcfMapUnitChunk};
 pub struct Panorama {
     pub enabled: bool,
     pub file: Option<Vec<u8>>,
-    /// If None, the panorama is fixed to the screen. (looping disabled)
-    /// If Some(None), the panorama can be moved and loops. (autoscroll disabled)
-    /// If Some(Some(x)), the panorama has autoscroll enabled with speed x. X can be 0.
     pub horizontal: PanoramaOptions,
-    /// See documentation for [`Self::horizontal`]
     pub vertical: PanoramaOptions,
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum PanoramaOptions {
+    /// Fixed to the screen (looping disabled).
     #[default]
     NoLoop,
+    /// Can move and loops (autoscroll disabled).
     NoAutoscroll,
+    /// Autoscroll is enabled with speed `X`. `X` can be `0`.
     Autoscroll(i32),
 }
 

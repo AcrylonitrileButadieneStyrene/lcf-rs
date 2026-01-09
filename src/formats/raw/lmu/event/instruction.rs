@@ -751,21 +751,21 @@ pub enum Instruction {
         /// - 9: BGM looped
         mode: u32,
         /// - Switch: switch id
-        /// - Variable: variable id
+        /// - Variable: Left hand side variable id
         field1: u32,
         /// - Switch:
         ///   - 0: ON
         ///   - 1: OFF
         /// - Variable:
-        ///   - 0: Constant
-        ///   - 1: Variable
+        ///   - 0: field3 is a constant
+        ///   - 1: field3 is a variable
         /// - Event facing:
         ///   - 0: Up
         ///   - 1: Right
         ///   - 2: Down
         ///   - 3: Left
         field2: u32,
-        /// - Variable: value
+        /// - Variable: Right hand side constant value or variable id.
         field3: u32,
         /// - Variable:
         ///   - 0: ==
