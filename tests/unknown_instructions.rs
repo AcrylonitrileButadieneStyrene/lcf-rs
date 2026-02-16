@@ -1,4 +1,5 @@
 use lcf::raw::lmu::event::{EventChunk, instruction::Instruction, page::EventPageChunk};
+use rayon::iter::{IntoParallelIterator as _, IntoParallelRefIterator as _, ParallelIterator as _};
 
 #[test]
 #[ignore] // takes 3 minutes to run on 2kki (on a hard drive)
@@ -7,11 +8,14 @@ fn find_unknown_instructions() {
     let results = std::fs::read_dir("tests/data/games/")
         .unwrap()
         .filter_map(|dir| dir.map(|dir| dir.path()).ok())
+        .collect::<Vec<_>>()
+        .par_iter()
         .filter(|game| game.join("RPG_RT.ldb").exists())
         .filter_map(|game| std::fs::read_dir(&game).ok())
         .flat_map(|entries| {
             entries
-                .into_iter()
+                .collect::<Vec<_>>()
+                .into_par_iter()
                 .filter_map(|entry| entry.ok())
                 .filter(|entry| {
                     entry
@@ -21,7 +25,11 @@ fn find_unknown_instructions() {
                         .unwrap_or_default()
                 })
                 .map(|file| file.path())
-                .filter_map(|path| std::fs::read(&path).ok().zip(Some(std::rc::Rc::new(path))))
+                .filter_map(|path| {
+                    std::fs::read(&path)
+                        .ok()
+                        .zip(Some(std::sync::Arc::new(path)))
+                })
                 .filter_map(|(bytes, map)| {
                     let mut buf = std::io::Cursor::new(bytes);
                     lcf::raw::lmu::RawLcfMapUnit::read(&mut buf)
