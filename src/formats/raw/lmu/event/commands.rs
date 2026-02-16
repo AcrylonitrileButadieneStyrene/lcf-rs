@@ -80,7 +80,7 @@ mod tests {
                 Instruction::ElseBranch,
                 Instruction::WaitForAllMovement,
                 Instruction::End,
-                Instruction::EndBranch,
+                Instruction::EndBranch { unknown: None },
             ]
             .into_iter()
             .map(|instruction| Command {
