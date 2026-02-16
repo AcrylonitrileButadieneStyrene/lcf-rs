@@ -6,8 +6,10 @@ use crate::{
 };
 
 pub mod event;
+mod generator;
 mod panorama;
 
+pub use generator::Generator;
 pub use panorama::{Panorama, PanoramaOptions};
 
 #[derive(Clone, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -29,13 +31,16 @@ pub struct LcfMapUnit {
     pub height: u32,
     pub scroll_type: ScrollType,
     pub panorama: Panorama,
-    pub top_level: bool,    
+    pub generator: Generator,
+    pub top_level: bool,
     /// Length must match the [`Self::width`] * [`Self::height`]
     pub lower: Vec<u16>,
     /// Length must match the [`Self::width`] * [`Self::height`]
     pub upper: Vec<u16>,
     pub events: Vec<Event>,
     pub save_time: u32,
+
+    pub is_r2k3: bool,
 }
 
 impl Default for LcfMapUnit {
@@ -46,11 +51,13 @@ impl Default for LcfMapUnit {
             height: 15,
             scroll_type: ScrollType::default(),
             panorama: Panorama::default(),
+            generator: Generator::default(),
             lower: vec![0; 20 * 15],
             upper: vec![10000; 20 * 15],
             events: Vec::new(),
             top_level: false,
             save_time: 2,
+            is_r2k3: false,
         }
     }
 }
@@ -143,7 +150,37 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                 LcfMapUnitChunk::PanoramaVerticalAutoScrollSpeed(number) => {
                     value.panorama.vertical = PanoramaOptions::Autoscroll(number.0 as i32);
                 }
+                LcfMapUnitChunk::GeneratorEnabled(number) => {
+                    value.generator.enabled = number.0 != 0
+                }
+                LcfMapUnitChunk::GeneratorMode(number) => value.generator.mode = number.0,
                 LcfMapUnitChunk::TopLevel(number) => value.top_level = number.0 != 0,
+                LcfMapUnitChunk::GeneratorTiles(number) => value.generator.tiles = number.0,
+                LcfMapUnitChunk::GeneratorWidth(number) => value.generator.width = number.0,
+                LcfMapUnitChunk::GeneratorHeight(number) => {
+                    value.generator.height = number.0;
+                }
+                LcfMapUnitChunk::GeneratorSurround(number) => {
+                    value.generator.surround = number.0 != 0
+                }
+                LcfMapUnitChunk::GeneratorUseWallUpper(number) => {
+                    value.generator.use_wall_upper = number.0 != 0
+                }
+                LcfMapUnitChunk::GeneratorUseFloorB(number) => {
+                    value.generator.use_floor_b = number.0 != 0
+                }
+                LcfMapUnitChunk::GeneratorUseFloorC(number) => {
+                    value.generator.use_floor_c = number.0 != 0
+                }
+                LcfMapUnitChunk::GeneratorUseObstacleB(number) => {
+                    value.generator.use_obstacle_b = number.0 != 0
+                }
+                LcfMapUnitChunk::GeneratorUseObstacleC(number) => {
+                    value.generator.use_obstacle_c = number.0 != 0
+                }
+                LcfMapUnitChunk::GeneratorX(items) => value.generator.x = items,
+                LcfMapUnitChunk::GeneratorY(items) => value.generator.y = items,
+                LcfMapUnitChunk::GeneratorIDs(items) => value.generator.ids = items,
                 LcfMapUnitChunk::Lower(items) => value.lower = items,
                 LcfMapUnitChunk::Upper(items) => value.upper = items,
                 LcfMapUnitChunk::Events(chunks) => {
@@ -159,8 +196,11 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                         })
                         .try_collect()?;
                 }
-
-                LcfMapUnitChunk::SaveTime(number) => value.save_time = number.0,
+                LcfMapUnitChunk::SaveTimeA(number) => {
+                    value.is_r2k3 = true;
+                    value.save_time = number.0;
+                }
+                LcfMapUnitChunk::SaveTimeB(number) => value.save_time = number.0,
                 LcfMapUnitChunk::Unknown { id, bytes } => {
                     return Err(LcfMapUnitReadError::UnknownData(id, bytes));
                 }
@@ -190,6 +230,7 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
         chunks.push(LcfMapUnitChunk::ScrollType((val.scroll_type as u32).into()));
 
         val.panorama.write_chunks(&mut chunks);
+        val.generator.write_chunks(&mut chunks, val.is_r2k3);
 
         if val.top_level {
             chunks.push(LcfMapUnitChunk::TopLevel(Number(1)));
@@ -207,7 +248,11 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
             val.events.iter().map(Event::to_chunks).collect(),
         ));
 
-        chunks.push(LcfMapUnitChunk::SaveTime(val.save_time.into()));
+        if val.is_r2k3 {
+            chunks.push(LcfMapUnitChunk::SaveTimeA(val.save_time.into()));
+        } else {
+            chunks.push(LcfMapUnitChunk::SaveTimeB(val.save_time.into()));
+        }
 
         Self(Array {
             inner_vec: chunks.into_iter().map(Into::into).collect(),

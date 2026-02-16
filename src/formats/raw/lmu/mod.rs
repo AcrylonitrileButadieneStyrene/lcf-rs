@@ -64,8 +64,64 @@ pub enum LcfMapUnitChunk {
     PanoramaVerticalAutoScrollSpeed(Number),
 
     /// - Type: boolean
+    #[br(pre_assert(id == 40))]
+    GeneratorEnabled(Number),
+
+    /// - 0: Road
+    /// - 1: Room
+    /// - 2: Maze
+    /// - 3: Obstacle
+    #[br(pre_assert(id == 41))]
+    GeneratorMode(Number),
+
+    /// - Type: boolean
     #[br(pre_assert(id == 42))]
     TopLevel(Number),
+
+    #[br(pre_assert(id == 48))]
+    GeneratorTiles(Number),
+
+    /// - Default: 4
+    #[br(pre_assert(id == 49))]
+    GeneratorWidth(Number),
+
+    /// - Default: 2
+    #[br(pre_assert(id == 50))]
+    GeneratorHeight(Number),
+
+    /// "Surround Exterior with Wall Ceiling"
+    /// - Type: boolean
+    #[br(pre_assert(id == 51))]
+    GeneratorSurround(Number),
+
+    /// - Type: boolean
+    #[br(pre_assert(id == 52))]
+    GeneratorUseWallUpper(Number),
+
+    /// - Type: boolean
+    #[br(pre_assert(id == 53))]
+    GeneratorUseFloorB(Number),
+
+    /// - Type: boolean
+    #[br(pre_assert(id == 54))]
+    GeneratorUseFloorC(Number),
+
+    /// - Type: boolean
+    #[br(pre_assert(id == 55))]
+    GeneratorUseObstacleB(Number),
+
+    /// - Type: boolean
+    #[br(pre_assert(id == 56))]
+    GeneratorUseObstacleC(Number),
+
+    #[br(pre_assert(id == 60))]
+    GeneratorX([u32; 9]),
+
+    #[br(pre_assert(id == 61))]
+    GeneratorY([u32; 9]),
+
+    #[br(pre_assert(id == 62))]
+    GeneratorIDs(#[br(count = length / 2)] Vec<u16>),
 
     #[br(pre_assert(id == 71))]
     Lower(#[br(count = length / 2)] Vec<u16>),
@@ -76,8 +132,11 @@ pub enum LcfMapUnitChunk {
     #[br(pre_assert(id == 81))]
     Events(Array2D<event::EventChunk>),
 
+    #[br(pre_assert(id == 90))]
+    SaveTimeA(Number),
+
     #[br(pre_assert(id == 91))]
-    SaveTime(Number),
+    SaveTimeB(Number),
 
     Unknown {
         #[br(calc = id)]
@@ -104,11 +163,26 @@ impl ToChunkID for LcfMapUnitChunk {
             Self::PanoramaHorizontalAutoScrollSpeed(_) => 36,
             Self::PanoramaVerticalAutoScroll(_) => 37,
             Self::PanoramaVerticalAutoScrollSpeed(_) => 38,
+            Self::GeneratorEnabled(_) => 40,
+            Self::GeneratorMode(_) => 41,
             Self::TopLevel(_) => 42,
+            Self::GeneratorTiles(_) => 48,
+            Self::GeneratorWidth(_) => 49,
+            Self::GeneratorHeight(_) => 50,
+            Self::GeneratorSurround(_) => 51,
+            Self::GeneratorUseWallUpper(_) => 52,
+            Self::GeneratorUseFloorB(_) => 53,
+            Self::GeneratorUseFloorC(_) => 54,
+            Self::GeneratorUseObstacleB(_) => 55,
+            Self::GeneratorUseObstacleC(_) => 56,
+            Self::GeneratorX(_) => 60,
+            Self::GeneratorY(_) => 61,
+            Self::GeneratorIDs(_) => 62,
             Self::Lower(_) => 71,
             Self::Upper(_) => 72,
             Self::Events { .. } => 81,
-            Self::SaveTime(_) => 91,
+            Self::SaveTimeA(_) => 90,
+            Self::SaveTimeB(_) => 91,
             Self::Unknown { id, .. } => *id,
         }
     }

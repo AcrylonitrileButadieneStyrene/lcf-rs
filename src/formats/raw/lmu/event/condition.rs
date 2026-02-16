@@ -27,7 +27,19 @@ pub enum EventPageConditionChunk {
     Actor(Number),
 
     #[br(pre_assert(id == 8))]
-    Timer(Number),
+    Timer1(Number),
+
+    #[br(pre_assert(id == 9))]
+    Timer2(Number),
+
+    /// - 0: ==
+    /// - 1: >=
+    /// - 2: <=
+    /// - 3: >
+    /// - 4: <
+    /// - 5: !=
+    #[br(pre_assert(id == 10))]
+    Operator(Number),
 
     Unknown {
         #[br(calc = id)]
@@ -49,7 +61,9 @@ impl crate::helpers::ToChunkID for EventPageConditionChunk {
             Self::Value(_) => 5,
             Self::Item(_) => 6,
             Self::Actor(_) => 7,
-            Self::Timer(_) => 8,
+            Self::Timer1(_) => 8,
+            Self::Timer2(_) => 9,
+            Self::Operator(_) => 10,
             Self::Unknown { id, .. } => *id,
         }
     }
