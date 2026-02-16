@@ -1,6 +1,6 @@
 use crate::{
     enums::ScrollType,
-    helpers::Array,
+    helpers::{Array, Number},
     lmu::event::Event,
     raw::lmu::{LcfMapUnitChunk, RawLcfMapUnit},
 };
@@ -19,16 +19,17 @@ pub struct LcfMapUnit {
     /// - Minimum: 20 (size of screen).
     /// - Maximum: 500.
     ///
-    /// Exceeding this range causes no problems.
+    /// Being outside of this range causes no obvious problems.
     pub width: u32,
     /// Height of the map in tiles.
     /// - Minimum: 15 (size of screen).
     /// - Maximum: 500.
     ///
-    /// Exceeding this range causes no problems.
+    /// Being outside of this range causes no obvious problems.
     pub height: u32,
     pub scroll_type: ScrollType,
     pub panorama: Panorama,
+    pub top_level: bool,    
     /// Length must match the [`Self::width`] * [`Self::height`]
     pub lower: Vec<u16>,
     /// Length must match the [`Self::width`] * [`Self::height`]
@@ -48,6 +49,7 @@ impl Default for LcfMapUnit {
             lower: vec![0; 20 * 15],
             upper: vec![10000; 20 * 15],
             events: Vec::new(),
+            top_level: false,
             save_time: 2,
         }
     }
@@ -141,6 +143,7 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                 LcfMapUnitChunk::PanoramaVerticalAutoScrollSpeed(number) => {
                     value.panorama.vertical = PanoramaOptions::Autoscroll(number.0 as i32);
                 }
+                LcfMapUnitChunk::TopLevel(number) => value.top_level = number.0 != 0,
                 LcfMapUnitChunk::Lower(items) => value.lower = items,
                 LcfMapUnitChunk::Upper(items) => value.upper = items,
                 LcfMapUnitChunk::Events(chunks) => {
@@ -187,6 +190,10 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
         chunks.push(LcfMapUnitChunk::ScrollType((val.scroll_type as u32).into()));
 
         val.panorama.write_chunks(&mut chunks);
+
+        if val.top_level {
+            chunks.push(LcfMapUnitChunk::TopLevel(Number(1)));
+        }
 
         let area = (val.width * val.height) as usize;
         let mut lower = val.lower.clone();

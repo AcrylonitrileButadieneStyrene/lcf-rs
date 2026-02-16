@@ -32,7 +32,7 @@ pub enum LcfDataBaseChunk {
     #[br(pre_assert(id == 16))]
     Terrain(#[br(count = length)] Vec<u8>),
     #[br(pre_assert(id == 17))]
-    Attributes(Array<Chunk<UnknownChunk>>),
+    Attributes(Array2D<UnknownChunk>),
     #[br(pre_assert(id == 18))]
     States(Array2D<UnknownChunk>),
     #[br(pre_assert(id == 19))]

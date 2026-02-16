@@ -63,6 +63,10 @@ pub enum LcfMapUnitChunk {
     #[br(pre_assert(id == 38))]
     PanoramaVerticalAutoScrollSpeed(Number),
 
+    /// - Type: boolean
+    #[br(pre_assert(id == 42))]
+    TopLevel(Number),
+
     #[br(pre_assert(id == 71))]
     Lower(#[br(count = length / 2)] Vec<u16>),
 
@@ -100,6 +104,7 @@ impl ToChunkID for LcfMapUnitChunk {
             Self::PanoramaHorizontalAutoScrollSpeed(_) => 36,
             Self::PanoramaVerticalAutoScroll(_) => 37,
             Self::PanoramaVerticalAutoScrollSpeed(_) => 38,
+            Self::TopLevel(_) => 42,
             Self::Lower(_) => 71,
             Self::Upper(_) => 72,
             Self::Events { .. } => 81,
