@@ -18,4 +18,5 @@ pub enum AnimationType {
     DirectionFixAnimated = 3,
     FixedGraphic = 4,
     Spin = 5,
+    StepFrameFix = 6,
 }

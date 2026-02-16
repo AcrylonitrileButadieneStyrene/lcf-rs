@@ -56,7 +56,12 @@ impl TryFrom<RawLcfMapTree> for LcfMapTree {
             .try_collect::<Vec<_>>()?;
         let mut maps = Vec::with_capacity(value.order.len());
         for index in value.order {
-            let item = std::mem::take(&mut basis[index.0 as usize]);
+            let index = index.0 as usize;
+            let Some(item) = basis.get_mut(index) else {
+                return Err(LcfMapTreeReadError::InvalidMapOrder);
+            };
+
+            let item = std::mem::take(item);
             if item.is_none() {
                 return Err(LcfMapTreeReadError::InvalidMapOrder);
             }

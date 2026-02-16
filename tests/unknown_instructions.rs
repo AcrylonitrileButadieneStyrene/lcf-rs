@@ -2,7 +2,7 @@ use lcf::raw::lmu::event::{EventChunk, instruction::Instruction, page::EventPage
 use rayon::iter::{IntoParallelIterator as _, IntoParallelRefIterator as _, ParallelIterator as _};
 
 #[test]
-#[ignore] // takes 3 minutes to run on 2kki (on a hard drive)
+#[ignore]
 fn find_unknown_instructions() {
     // rust-analyzer gave up on this one
     let results = std::fs::read_dir("tests/data/games/")
