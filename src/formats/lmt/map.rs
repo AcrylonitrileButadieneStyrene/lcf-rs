@@ -43,7 +43,7 @@ impl Default for Map {
             teleport: Setting::default(),
             escape: Setting::default(),
             save: Setting::default(),
-            enemies: Vec::default(),
+            enemies: vec![0],
             encounter_rate: 25,
         }
     }

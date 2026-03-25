@@ -8,7 +8,7 @@ cast_possible_truncation = "allow"
 
 [package]
 name = "lcf"
-version = "0.9.1"
+version = "0.9.2"
 edition = "2024"
 description = "Bidirectional parser for the lcf file format used by RPG Maker 2000 games"
 readme = "README.md"
