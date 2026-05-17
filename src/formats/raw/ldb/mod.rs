@@ -3,6 +3,7 @@ use crate::{
     raw::ldb::term::Term,
 };
 
+pub mod actor;
 pub mod chipset;
 pub mod common_event;
 pub mod switch;
@@ -20,7 +21,7 @@ pub struct RawLcfDataBase(pub Array<Chunk<LcfDataBaseChunk>>);
 #[br(import(id: u32, length: u32))]
 pub enum LcfDataBaseChunk {
     #[br(pre_assert(id == 11))]
-    Actors(Array2D<UnknownChunk>),
+    Actors(Array2D<actor::ActorChunk>),
     #[br(pre_assert(id == 12))]
     Skills(#[br(count = length)] Vec<u8>),
     #[br(pre_assert(id == 13))]

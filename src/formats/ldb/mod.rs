@@ -36,7 +36,9 @@ impl TryFrom<RawLcfDataBase> for LcfDataBase {
 
         for chunk in raw.0.inner_vec {
             match chunk.data {
-                LcfDataBaseChunk::Actors(_) => (),
+                LcfDataBaseChunk::Actors(data) => {
+                    dbg!(data);
+                }
                 LcfDataBaseChunk::Skills(_) => (),
                 LcfDataBaseChunk::Items(_) => (),
                 LcfDataBaseChunk::Enemies(_) => (),
