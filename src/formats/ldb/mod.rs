@@ -69,6 +69,7 @@ impl TryFrom<RawLcfDataBase> for LcfDataBase {
                         .try_collect()?;
                 }
                 LcfDataBaseChunk::Version(_) => (),
+                LcfDataBaseChunk::Empty27 | LcfDataBaseChunk::Empty28 => (),
                 LcfDataBaseChunk::Unknown { id, bytes } => {
                     return Err(LcfDataBaseReadError::UnknownData(id, bytes));
                 }

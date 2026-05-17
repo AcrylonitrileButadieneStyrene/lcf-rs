@@ -21,6 +21,7 @@ exclude = [".gitignore", "tests/"]
 [dependencies]
 binrw = "0.15.0"
 byteorder = "1.5.0"
+indexmap = { version = "2.14.0", features = ["serde"] }
 num_enum = "0.7.5"
 serde = { version = "1.0", features = ["derive"] }
 thiserror = "2.0.16"

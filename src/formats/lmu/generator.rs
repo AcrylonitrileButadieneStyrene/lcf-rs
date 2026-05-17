@@ -1,4 +1,4 @@
-use crate::{helpers::Number, raw::lmu::LcfMapUnitChunk};
+use crate::{helpers::Number, raw::lmu::LcfMapUnitChunk as Chunk};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[allow(clippy::struct_excessive_bools)]
@@ -20,39 +20,36 @@ pub struct Generator {
 }
 
 impl Generator {
-    #[expect(clippy::cast_sign_loss)]
-    pub fn write_chunks(&self, chunks: &mut Vec<LcfMapUnitChunk>, is_r2k3: bool) {
-        if !is_r2k3 {
-            return;
-        }
+    pub fn write_chunks(&self, chunks: &mut Vec<Chunk>) {
+        let mut emit = emitter(chunks);
+        emit(self.enabled, Chunk::GeneratorEnabled(Number(1)));
+        emit(self.surround, Chunk::GeneratorSurround(Number(1)));
+        emit(self.surround, Chunk::GeneratorSurround(Number(1)));
+        emit(self.use_wall_upper, Chunk::GeneratorUseWallUpper(Number(1)));
+        emit(self.use_floor_b, Chunk::GeneratorUseFloorB(Number(1)));
+        emit(self.use_floor_c, Chunk::GeneratorUseFloorC(Number(1)));
+        emit(self.use_obstacle_b, Chunk::GeneratorUseObstacleB(Number(1)));
+        emit(self.use_obstacle_c, Chunk::GeneratorUseObstacleC(Number(1)));
+        drop(emit);
 
-        chunks.push(LcfMapUnitChunk::GeneratorEnabled(Number(
-            self.enabled as u32,
-        )));
-        chunks.push(LcfMapUnitChunk::GeneratorMode(Number(self.mode)));
-        chunks.push(LcfMapUnitChunk::GeneratorTiles(Number(self.tiles)));
-        chunks.push(LcfMapUnitChunk::GeneratorWidth(Number(self.width)));
-        chunks.push(LcfMapUnitChunk::GeneratorHeight(Number(self.height)));
-        chunks.push(LcfMapUnitChunk::GeneratorSurround(Number(
-            self.surround as u32,
-        )));
-        chunks.push(LcfMapUnitChunk::GeneratorUseWallUpper(Number(
-            self.use_wall_upper as u32,
-        )));
-        chunks.push(LcfMapUnitChunk::GeneratorUseFloorB(Number(
-            self.use_floor_b as u32,
-        )));
-        chunks.push(LcfMapUnitChunk::GeneratorUseFloorC(Number(
-            self.use_floor_c as u32,
-        )));
-        chunks.push(LcfMapUnitChunk::GeneratorUseObstacleB(Number(
-            self.use_obstacle_b as u32,
-        )));
-        chunks.push(LcfMapUnitChunk::GeneratorUseObstacleC(Number(
-            self.use_obstacle_c as u32,
-        )));
-        chunks.push(LcfMapUnitChunk::GeneratorX(self.x));
-        chunks.push(LcfMapUnitChunk::GeneratorY(self.y));
-        chunks.push(LcfMapUnitChunk::GeneratorIDs(self.ids.clone()));
+        chunks.push(Chunk::GeneratorMode(Number(self.mode)));
+        chunks.push(Chunk::GeneratorTiles(Number(self.tiles)));
+        chunks.push(Chunk::GeneratorWidth(Number(self.width)));
+        chunks.push(Chunk::GeneratorHeight(Number(self.height)));
+
+        chunks.push(Chunk::GeneratorX(self.x));
+        chunks.push(Chunk::GeneratorY(self.y));
+
+        if !self.ids.is_empty() {
+            chunks.push(Chunk::GeneratorIDs(self.ids.clone()));
+        }
+    }
+}
+
+fn emitter(chunks: &mut Vec<Chunk>) -> impl FnMut(bool, Chunk) {
+    move |condition, value| {
+        if condition {
+            chunks.push(value);
+        }
     }
 }

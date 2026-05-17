@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{helpers::Number, raw::lmt::RawLcfMapTree};
 
 use serde::{Deserialize, Serialize};
@@ -12,11 +14,13 @@ pub use start::{Position, Start};
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LcfMapTree {
     /// The last map opened in the editor
-    pub active: u32,
+    pub active: u16,
     /// Information for starting new saves
     pub start: Start,
     /// The 0th map is the game itself.
-    pub maps: Vec<(u32, Map)>,
+    ///
+    /// A map may be [None] if it was specified in the order but never defined
+    pub maps: indexmap::IndexMap<u16, Map>,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -45,32 +49,28 @@ impl TryFrom<RawLcfMapTree> for LcfMapTree {
     fn try_from(value: RawLcfMapTree) -> Result<Self, Self::Error> {
         assert_eq!(value.maps.inner_vec.len(), value.order.len());
 
-        // i think i had a better way of doing this before
-        let mut basis = value
-            .maps
-            .inner_vec
-            .into_iter()
-            .map(|(id, chunks)| {
-                Map::from_chunks(id.0, chunks.inner_vec).map(|map| Some((id.0, map)))
-            })
-            .try_collect::<Vec<_>>()?;
-        let mut maps = Vec::with_capacity(value.order.len());
-        for index in value.order {
-            let index = index.0 as usize;
-            let Some(item) = basis.get_mut(index) else {
-                return Err(LcfMapTreeReadError::InvalidMapOrder);
+        let mut basis = HashMap::new();
+        for (Number(id), chunks) in value.maps.inner_vec {
+            let map = Map::from_chunks(id, chunks.inner_vec).unwrap();
+            basis.insert(id, Some(map));
+        }
+
+        let mut maps = indexmap::IndexMap::new();
+        for Number(id) in value.order {
+            let item = match basis.get_mut(&id).map(std::mem::take) {
+                Some(Some(item)) => item,
+                Some(None) => {
+                    return Err(LcfMapTreeReadError::InvalidMapOrder);
+                }
+                None => return Err(LcfMapTreeReadError::InvalidMapOrder),
             };
 
-            let item = std::mem::take(item);
-            if item.is_none() {
-                return Err(LcfMapTreeReadError::InvalidMapOrder);
-            }
-            maps.push(item);
+            maps.insert(id as u16, item);
         }
 
         Ok(Self {
-            active: value.active.0,
-            maps: maps.into_iter().map(Option::unwrap).collect(),
+            active: value.active.0 as u16,
+            maps,
             start: Start::from_chunks(value.start.inner_vec)?,
         })
     }
@@ -79,14 +79,18 @@ impl TryFrom<RawLcfMapTree> for LcfMapTree {
 impl From<&LcfMapTree> for RawLcfMapTree {
     fn from(value: &LcfMapTree) -> Self {
         Self {
-            active: Number(value.active),
+            active: Number(u32::from(value.active)),
             start: value.start.to_chunks(),
-            order: value.maps.iter().map(|(id, _)| Number(*id)).collect(),
+            order: value
+                .maps
+                .iter()
+                .map(|(id, _)| Number(u32::from(*id)))
+                .collect(),
             maps: {
-                let mut maps = value.maps.clone();
-                maps.sort_by_key(|(id, _)| *id);
-                maps.iter()
-                    .map(|(id, map)| (Number(*id), map.to_chunks()))
+                value
+                    .maps
+                    .iter()
+                    .map(|(id, map)| (Number(u32::from(*id)), map.to_chunks()))
                     .collect()
             },
         }

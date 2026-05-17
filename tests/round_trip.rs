@@ -89,6 +89,7 @@ fn recode_round_trip<T: lcf::ConvertExt + PartialEq + std::fmt::Debug>(path: &st
 where
     <T as TryFrom<<T as lcf::ConvertExt>::Raw>>::Error: From<binrw::Error> + std::fmt::Debug,
 {
+    println!("current: {path:?}");
     let bytes = std::fs::read(path).unwrap();
     let mut cursor = std::io::Cursor::new(bytes);
     let before = T::read(&mut cursor).unwrap();

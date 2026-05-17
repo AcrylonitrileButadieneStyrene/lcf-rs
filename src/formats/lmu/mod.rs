@@ -99,6 +99,7 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
     type Error = LcfMapUnitReadError;
 
     #[expect(clippy::cast_possible_wrap)]
+    #[expect(clippy::too_many_lines)]
     fn try_from(raw: RawLcfMapUnit) -> Result<Self, Self::Error> {
         let mut value = Self::default();
 
@@ -151,7 +152,7 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                     value.panorama.vertical = PanoramaOptions::Autoscroll(number.0 as i32);
                 }
                 LcfMapUnitChunk::GeneratorEnabled(number) => {
-                    value.generator.enabled = number.0 != 0
+                    value.generator.enabled = number.0 != 0;
                 }
                 LcfMapUnitChunk::GeneratorMode(number) => value.generator.mode = number.0,
                 LcfMapUnitChunk::TopLevel(number) => value.top_level = number.0 != 0,
@@ -161,26 +162,26 @@ impl TryFrom<RawLcfMapUnit> for LcfMapUnit {
                     value.generator.height = number.0;
                 }
                 LcfMapUnitChunk::GeneratorSurround(number) => {
-                    value.generator.surround = number.0 != 0
+                    value.generator.surround = number.0 != 0;
                 }
                 LcfMapUnitChunk::GeneratorUseWallUpper(number) => {
-                    value.generator.use_wall_upper = number.0 != 0
+                    value.generator.use_wall_upper = number.0 != 0;
                 }
                 LcfMapUnitChunk::GeneratorUseFloorB(number) => {
-                    value.generator.use_floor_b = number.0 != 0
+                    value.generator.use_floor_b = number.0 != 0;
                 }
                 LcfMapUnitChunk::GeneratorUseFloorC(number) => {
-                    value.generator.use_floor_c = number.0 != 0
+                    value.generator.use_floor_c = number.0 != 0;
                 }
                 LcfMapUnitChunk::GeneratorUseObstacleB(number) => {
-                    value.generator.use_obstacle_b = number.0 != 0
+                    value.generator.use_obstacle_b = number.0 != 0;
                 }
                 LcfMapUnitChunk::GeneratorUseObstacleC(number) => {
-                    value.generator.use_obstacle_c = number.0 != 0
+                    value.generator.use_obstacle_c = number.0 != 0;
                 }
                 LcfMapUnitChunk::GeneratorX(items) => value.generator.x = items,
                 LcfMapUnitChunk::GeneratorY(items) => value.generator.y = items,
-                LcfMapUnitChunk::GeneratorIDs(items) => value.generator.ids = items,
+                LcfMapUnitChunk::GeneratorIDs(items) => value.generator.ids = dbg!(items),
                 LcfMapUnitChunk::Lower(items) => value.lower = items,
                 LcfMapUnitChunk::Upper(items) => value.upper = items,
                 LcfMapUnitChunk::Events(chunks) => {
@@ -230,7 +231,7 @@ impl From<&LcfMapUnit> for RawLcfMapUnit {
         chunks.push(LcfMapUnitChunk::ScrollType((val.scroll_type as u32).into()));
 
         val.panorama.write_chunks(&mut chunks);
-        val.generator.write_chunks(&mut chunks, val.is_r2k3);
+        val.generator.write_chunks(&mut chunks);
 
         if val.top_level {
             chunks.push(LcfMapUnitChunk::TopLevel(Number(1)));

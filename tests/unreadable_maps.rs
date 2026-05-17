@@ -24,6 +24,8 @@ fn find_unreadable_maps() {
         .into_par_iter()
         .flat_map(|(game, lmt)| {
             lmt.maps
+                .into_iter()
+                .collect::<Vec<_>>()
                 .into_par_iter()
                 .filter_map(move |map| {
                     let path = game.join(format!("Map{:>04}.lmu", map.0));

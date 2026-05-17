@@ -20,7 +20,7 @@ pub struct RawLcfDataBase(pub Array<Chunk<LcfDataBaseChunk>>);
 #[br(import(id: u32, length: u32))]
 pub enum LcfDataBaseChunk {
     #[br(pre_assert(id == 11))]
-    Actors(#[br(count = length)] Vec<u8>),
+    Actors(Array2D<UnknownChunk>),
     #[br(pre_assert(id == 12))]
     Skills(#[br(count = length)] Vec<u8>),
     #[br(pre_assert(id == 13))]
@@ -54,6 +54,10 @@ pub enum LcfDataBaseChunk {
     /// - r2k3: present but empty.
     #[br(pre_assert(id == 26))]
     Version(#[br(count = length)] Vec<u8>),
+    #[br(pre_assert(id == 27))]
+    Empty27,
+    #[br(pre_assert(id == 28))]
+    Empty28,
 
     Unknown {
         #[br(calc = id)]
@@ -84,6 +88,8 @@ impl ToChunkID for LcfDataBaseChunk {
             Self::Variables { .. } => 24,
             Self::CommonEvents { .. } => 25,
             Self::Version(_) => 26,
+            Self::Empty27 => 27,
+            Self::Empty28 => 28,
             Self::Unknown { id, .. } => *id,
         }
     }

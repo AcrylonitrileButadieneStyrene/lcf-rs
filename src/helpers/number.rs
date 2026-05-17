@@ -4,9 +4,10 @@ const FLAG_CONTINUE: u8 = 0b1000_0000;
 const BITS_REST: u8 = 0b0111_1111;
 
 /// Variable sized number. MSB128/VLQ.
-/// 
+///
 /// Almost everything in the lcf format uses these,
-/// except for some things like instruction arguments (u32s) and tileset data (u16s).
+/// except for some things like
+/// instruction arguments (u32s) and tileset data (u16s).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Number(pub u32);
 
