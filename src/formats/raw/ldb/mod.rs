@@ -58,6 +58,14 @@ pub enum LcfDataBaseChunk {
     Empty27,
     #[br(pre_assert(id == 28))]
     Empty28,
+    #[br(pre_assert(id == 29))]
+    BattleCommands(Array<Chunk<UnknownChunk>>),
+    #[br(pre_assert(id == 30))]
+    Classes(Array2D<UnknownChunk>),
+    #[br(pre_assert(id == 31))]
+    Empty31,
+    #[br(pre_assert(id == 32))]
+    BattleAnimations(Array2D<UnknownChunk>),
 
     Unknown {
         #[br(calc = id)]
@@ -90,6 +98,10 @@ impl ToChunkID for LcfDataBaseChunk {
             Self::Version(_) => 26,
             Self::Empty27 => 27,
             Self::Empty28 => 28,
+            Self::BattleCommands(_) => 29,
+            Self::Classes(_) => 30,
+            Self::Empty31 => 31,
+            Self::BattleAnimations(_) => 32,
             Self::Unknown { id, .. } => *id,
         }
     }
