@@ -59,11 +59,11 @@ impl Event {
         chunks.push(EventChunk::Name(self.name.clone()));
 
         if self.x != 0 {
-            chunks.push(EventChunk::PositionX(Number(self.x)));
+            chunks.push(EventChunk::PositionX(self.x.into()));
         }
 
         if self.y != 0 {
-            chunks.push(EventChunk::PositionY(Number(self.y)));
+            chunks.push(EventChunk::PositionY(self.y.into()));
         }
 
         chunks.push(EventChunk::Pages(
@@ -71,7 +71,7 @@ impl Event {
                 .iter()
                 .map(EventPage::to_chunks)
                 .enumerate()
-                .map(|(id, chunks)| (Number(id as u32 + 1), chunks))
+                .map(|(id, chunks)| ((id as u32 + 1).into(), chunks))
                 .collect(),
         ));
 

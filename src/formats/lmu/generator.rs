@@ -21,21 +21,23 @@ pub struct Generator {
 
 impl Generator {
     pub fn write_chunks(&self, chunks: &mut Vec<Chunk>) {
+        const TRUE: Number = Number(1);
+
         let mut emit = emitter(chunks);
-        emit(self.enabled, Chunk::GeneratorEnabled(Number(1)));
-        emit(self.surround, Chunk::GeneratorSurround(Number(1)));
-        emit(self.surround, Chunk::GeneratorSurround(Number(1)));
-        emit(self.use_wall_upper, Chunk::GeneratorUseWallUpper(Number(1)));
-        emit(self.use_floor_b, Chunk::GeneratorUseFloorB(Number(1)));
-        emit(self.use_floor_c, Chunk::GeneratorUseFloorC(Number(1)));
-        emit(self.use_obstacle_b, Chunk::GeneratorUseObstacleB(Number(1)));
-        emit(self.use_obstacle_c, Chunk::GeneratorUseObstacleC(Number(1)));
+        emit(self.enabled, Chunk::GeneratorEnabled(TRUE));
+        emit(self.surround, Chunk::GeneratorSurround(TRUE));
+        emit(self.surround, Chunk::GeneratorSurround(TRUE));
+        emit(self.use_wall_upper, Chunk::GeneratorUseWallUpper(TRUE));
+        emit(self.use_floor_b, Chunk::GeneratorUseFloorB(TRUE));
+        emit(self.use_floor_c, Chunk::GeneratorUseFloorC(TRUE));
+        emit(self.use_obstacle_b, Chunk::GeneratorUseObstacleB(TRUE));
+        emit(self.use_obstacle_c, Chunk::GeneratorUseObstacleC(TRUE));
         drop(emit);
 
-        chunks.push(Chunk::GeneratorMode(Number(self.mode)));
-        chunks.push(Chunk::GeneratorTiles(Number(self.tiles)));
-        chunks.push(Chunk::GeneratorWidth(Number(self.width)));
-        chunks.push(Chunk::GeneratorHeight(Number(self.height)));
+        chunks.push(Chunk::GeneratorMode(self.mode.into()));
+        chunks.push(Chunk::GeneratorTiles(self.tiles.into()));
+        chunks.push(Chunk::GeneratorWidth(self.width.into()));
+        chunks.push(Chunk::GeneratorHeight(self.height.into()));
 
         chunks.push(Chunk::GeneratorX(self.x));
         chunks.push(Chunk::GeneratorY(self.y));

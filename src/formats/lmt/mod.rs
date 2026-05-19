@@ -79,18 +79,14 @@ impl TryFrom<RawLcfMapTree> for LcfMapTree {
 impl From<&LcfMapTree> for RawLcfMapTree {
     fn from(value: &LcfMapTree) -> Self {
         Self {
-            active: Number(u32::from(value.active)),
+            active: value.active.into(),
             start: value.start.to_chunks(),
-            order: value
-                .maps
-                .iter()
-                .map(|(id, _)| Number(u32::from(*id)))
-                .collect(),
+            order: value.maps.iter().map(|(id, _)| (*id).into()).collect(),
             maps: {
                 value
                     .maps
                     .iter()
-                    .map(|(id, map)| (Number(u32::from(*id)), map.to_chunks()))
+                    .map(|(id, map)| ((*id).into(), map.to_chunks()))
                     .collect()
             },
         }

@@ -1,5 +1,5 @@
 use crate::{
-    helpers::{Array, Chunk, Number},
+    helpers::{Array, Chunk},
     lmu::LcfMapUnitReadError,
     raw::lmu::event::move_route::EventMoveRouteChunk,
 };
@@ -37,14 +37,12 @@ impl MoveRoute {
         if self.commands.is_empty() {
             chunks.push(EventMoveRouteChunk::Commands(Vec::new()));
         } else {
-            chunks.push(EventMoveRouteChunk::CommandsSize(Number(
-                self.commands.len() as u32,
-            )));
+            chunks.push(EventMoveRouteChunk::CommandsSize(
+                self.commands.len().into(),
+            ));
             chunks.push(EventMoveRouteChunk::Commands(self.commands.clone()));
-            chunks.push(EventMoveRouteChunk::Repeat(Number(u32::from(self.repeat))));
-            chunks.push(EventMoveRouteChunk::Skippable(Number(u32::from(
-                self.skippable,
-            ))));
+            chunks.push(EventMoveRouteChunk::Repeat(self.repeat.into()));
+            chunks.push(EventMoveRouteChunk::Skippable(self.skippable.into()));
         }
 
         Array {

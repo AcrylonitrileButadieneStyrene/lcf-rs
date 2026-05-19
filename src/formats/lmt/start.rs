@@ -1,5 +1,5 @@
 use crate::{
-    helpers::{Array, Chunk, Maybe, Number},
+    helpers::{Array, Chunk, Maybe},
     lmt::LcfMapTreeReadError,
     raw::lmt::start::StartChunk,
 };
@@ -52,33 +52,33 @@ impl Start {
 
         if let Some(position) = &self.party {
             chunks.extend_from_slice(&[
-                StartChunk::PartyMapID(Number(position.map)),
-                StartChunk::PartyX(Number(position.x)),
-                StartChunk::PartyY(Number(position.y)),
+                StartChunk::PartyMapID(position.map.into()),
+                StartChunk::PartyX(position.x.into()),
+                StartChunk::PartyY(position.y.into()),
             ]);
         }
 
         if let Some(position) = &self.boat {
             chunks.extend_from_slice(&[
-                StartChunk::BoatMapID(Number(position.map)),
-                StartChunk::BoatX(Number(position.x)),
-                StartChunk::BoatY(Number(position.y)),
+                StartChunk::BoatMapID(position.map.into()),
+                StartChunk::BoatX(position.x.into()),
+                StartChunk::BoatY(position.y.into()),
             ]);
         }
 
         if let Some(position) = &self.ship {
             chunks.extend_from_slice(&[
-                StartChunk::ShipMapID(Number(position.map)),
-                StartChunk::ShipX(Number(position.x)),
-                StartChunk::ShipY(Number(position.y)),
+                StartChunk::ShipMapID(position.map.into()),
+                StartChunk::ShipX(position.x.into()),
+                StartChunk::ShipY(position.y.into()),
             ]);
         }
 
         if let Some(position) = &self.airship {
             chunks.extend_from_slice(&[
-                StartChunk::AirshipMapID(Number(position.map)),
-                StartChunk::AirshipX(Number(position.x)),
-                StartChunk::AirshipY(Number(position.y)),
+                StartChunk::AirshipMapID(position.map.into()),
+                StartChunk::AirshipX(position.x.into()),
+                StartChunk::AirshipY(position.y.into()),
             ]);
         }
 

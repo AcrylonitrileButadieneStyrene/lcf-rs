@@ -3,11 +3,13 @@ use crate::{
     raw::ldb::{LcfDataBaseChunk, RawLcfDataBase},
 };
 
+pub mod actor;
 pub mod chipset;
 pub mod common_event;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct LcfDataBase {
+    pub actors: Vec<actor::Actor>,
     pub chipsets: Vec<chipset::ChipSet>,
     pub common_events: Vec<common_event::CommonEvent>,
 }
@@ -36,8 +38,13 @@ impl TryFrom<RawLcfDataBase> for LcfDataBase {
 
         for chunk in raw.0.inner_vec {
             match chunk.data {
-                LcfDataBaseChunk::Actors(data) => {
-                    dbg!(data);
+                LcfDataBaseChunk::Actors(items) => {
+                    value.actors = items
+                        .to_vec()
+                        .ok_or(LcfDataBaseReadError::OutOfOrderArray)?
+                        .into_iter()
+                        .map(|chunks| actor::Actor::default().with_chunks(chunks))
+                        .try_collect()?
                 }
                 LcfDataBaseChunk::Skills(_) => (),
                 LcfDataBaseChunk::Items(_) => (),
@@ -89,13 +96,23 @@ impl TryFrom<RawLcfDataBase> for LcfDataBase {
 
 impl From<&LcfDataBase> for RawLcfDataBase {
     fn from(value: &LcfDataBase) -> Self {
-        let chunks = vec![LcfDataBaseChunk::ChipSet(
-            value
-                .chipsets
-                .iter()
-                .map(chipset::ChipSet::to_chunks)
-                .collect(),
-        )];
+        let chunks = vec![
+            LcfDataBaseChunk::Actors(value.actors.iter().map(actor::Actor::to_chunks).collect()),
+            LcfDataBaseChunk::ChipSet(
+                value
+                    .chipsets
+                    .iter()
+                    .map(chipset::ChipSet::to_chunks)
+                    .collect(),
+            ),
+            LcfDataBaseChunk::CommonEvents(
+                value
+                    .common_events
+                    .iter()
+                    .map(common_event::CommonEvent::to_chunks)
+                    .collect(),
+            ),
+        ];
 
         Self(Array {
             null_terminated: false,

@@ -11,7 +11,7 @@ pub use movement::Movement;
 
 use crate::{
     enums::{AnimationType, Direction, Priority, Trigger},
-    helpers::{Array, Chunk, Number},
+    helpers::{Array, Chunk},
     lmu::LcfMapUnitReadError,
     raw::lmu::event::{command::Command, commands::Commands, page::EventPageChunk},
 };
@@ -84,43 +84,46 @@ impl EventPage {
             chunks.push(EventPageChunk::GraphicFile(self.graphic.file.clone()));
         }
         if self.graphic.index != 0 {
-            chunks.push(EventPageChunk::GraphicIndex(Number(self.graphic.index)));
+            chunks.push(EventPageChunk::GraphicIndex(self.graphic.index.into()));
         }
-        chunks.push(EventPageChunk::GraphicDirection(Number(
-            self.graphic.direction as u32,
-        )));
+        chunks.push(EventPageChunk::GraphicDirection(
+            (self.graphic.direction as u32).into(),
+        ));
         if self.graphic.pattern != 1 {
-            chunks.push(EventPageChunk::GraphicPattern(Number(self.graphic.pattern)));
+            chunks.push(EventPageChunk::GraphicPattern(self.graphic.pattern.into()));
         }
-        chunks.push(EventPageChunk::GraphicTransparent(Number(u32::from(
-            self.graphic.transparent,
-        ))));
-        chunks.push(EventPageChunk::MovementType(Number(self.movement.r#type)));
+        chunks.push(EventPageChunk::GraphicTransparent(
+            self.graphic.transparent.into(),
+        ));
+        chunks.push(EventPageChunk::MovementType(self.movement.r#type.into()));
         if self.movement.frequency != 3 {
-            chunks.push(EventPageChunk::MovementFrequency(Number(
-                self.movement.frequency,
-            )));
+            chunks.push(EventPageChunk::MovementFrequency(
+                self.movement.frequency.into(),
+            ));
         }
-        chunks.push(EventPageChunk::Trigger(Number(self.trigger as u32)));
-        chunks.push(EventPageChunk::Priority(Number(self.priority as u32)));
-        chunks.push(EventPageChunk::PriorityForbidEventOverlap(Number(
-            u32::from(self.forbid_event_overlap),
-        )));
-        chunks.push(EventPageChunk::AnimationType(Number(
-            self.animation_type as u32,
-        )));
+        chunks.push(EventPageChunk::Trigger((self.trigger as u32).into()));
+        chunks.push(EventPageChunk::Priority((self.priority as u32).into()));
+        chunks.push(EventPageChunk::PriorityForbidEventOverlap(
+            self.forbid_event_overlap.into(),
+        ));
+        chunks.push(EventPageChunk::AnimationType(
+            (self.animation_type as u32).into(),
+        ));
         if self.movement.speed != 3 {
-            chunks.push(EventPageChunk::MoveSpeed(Number(self.movement.speed)));
+            chunks.push(EventPageChunk::MoveSpeed(self.movement.speed.into()));
         }
         chunks.push(EventPageChunk::MovementRoute(
             self.movement.route.to_chunks(),
         ));
 
-        chunks.push(EventPageChunk::CommandsSize(Number({
-            let mut buf = std::io::Cursor::new(Vec::new());
-            self.commands.write(&mut buf).unwrap();
-            buf.into_inner().len() as u32 + 4
-        })));
+        chunks.push(EventPageChunk::CommandsSize(
+            {
+                let mut buf = std::io::Cursor::new(Vec::new());
+                self.commands.write(&mut buf).unwrap();
+                buf.into_inner().len() as u32 + 4
+            }
+            .into(),
+        ));
         chunks.push(EventPageChunk::Commands(Commands(self.commands.clone())));
 
         Array {

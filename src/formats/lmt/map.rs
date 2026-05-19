@@ -129,11 +129,11 @@ impl Map {
         chunks.push(MapChunk::Name(self.name.clone()));
 
         if self.parent != 0 {
-            chunks.push(MapChunk::Parent(Number(self.parent)));
+            chunks.push(MapChunk::Parent(self.parent.into()));
         }
 
         if self.indentation != 0 {
-            chunks.push(MapChunk::Indentation(Number(self.indentation)));
+            chunks.push(MapChunk::Indentation(self.indentation.into()));
         }
 
         chunks.push(MapChunk::Type(Number(match self.r#type {
@@ -143,31 +143,29 @@ impl Map {
         })));
 
         if self.horizontal_scroll_bar != 0 {
-            chunks.push(MapChunk::HorizontalScrollBar(Number(
-                self.horizontal_scroll_bar,
-            )));
+            chunks.push(MapChunk::HorizontalScrollBar(
+                self.horizontal_scroll_bar.into(),
+            ));
         }
 
         if self.vertical_scroll_bar != 0 {
-            chunks.push(MapChunk::VerticalScrollBar(Number(
-                self.vertical_scroll_bar,
-            )));
+            chunks.push(MapChunk::VerticalScrollBar(self.vertical_scroll_bar.into()));
         }
 
         if self.expanded {
             chunks.push(MapChunk::Expanded(Number(1)));
         }
 
-        chunks.push(MapChunk::BGM(Number(self.bgm as u32)));
+        chunks.push(MapChunk::BGM((self.bgm as u32).into()));
         chunks.push(MapChunk::BGMData(self.bgm_data.to_chunks()));
-        chunks.push(MapChunk::Background(Number(self.background as u32)));
-        chunks.push(MapChunk::Teleport(Number(self.teleport as u32)));
-        chunks.push(MapChunk::Escape(Number(self.escape as u32)));
-        chunks.push(MapChunk::Save(Number(self.save as u32)));
+        chunks.push(MapChunk::Background((self.background as u32).into()));
+        chunks.push(MapChunk::Teleport((self.teleport as u32).into()));
+        chunks.push(MapChunk::Escape((self.escape as u32).into()));
+        chunks.push(MapChunk::Save((self.save as u32).into()));
         chunks.push(MapChunk::EncounterEnemyGroup(self.enemies.clone()));
 
         if self.encounter_rate != 25 || matches!(self.r#type, MapType::Game) {
-            chunks.push(MapChunk::EnemyAppearStep(Number(self.encounter_rate)));
+            chunks.push(MapChunk::EnemyAppearStep(self.encounter_rate.into()));
         }
 
         chunks.push(match self.r#type {

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    helpers::{Array, Chunk, Number},
+    helpers::{Array, Chunk},
     raw::lmt::bgm::MapBGMChunk,
 };
 
@@ -32,19 +32,19 @@ impl BGM {
         chunks.push(MapBGMChunk::FileName(self.file.clone()));
 
         if self.fade_in_time != 0 {
-            chunks.push(MapBGMChunk::FadeInTime(Number(self.fade_in_time)));
+            chunks.push(MapBGMChunk::FadeInTime(self.fade_in_time.into()));
         }
 
         if self.volume != 100 {
-            chunks.push(MapBGMChunk::Volume(Number(self.volume)));
+            chunks.push(MapBGMChunk::Volume(self.volume.into()));
         }
 
         if self.tempo != 100 {
-            chunks.push(MapBGMChunk::Tempo(Number(self.tempo)));
+            chunks.push(MapBGMChunk::Tempo(self.tempo.into()));
         }
 
         if self.balance != 50 {
-            chunks.push(MapBGMChunk::Balance(Number(self.balance)));
+            chunks.push(MapBGMChunk::Balance(self.balance.into()));
         }
 
         Array {

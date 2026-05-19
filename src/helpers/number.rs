@@ -124,6 +124,18 @@ mod tests {
     }
 }
 
+impl From<bool> for Number {
+    fn from(value: bool) -> Self {
+        Self(u32::from(value))
+    }
+}
+
+impl From<u16> for Number {
+    fn from(value: u16) -> Self {
+        Self(u32::from(value))
+    }
+}
+
 impl From<u32> for Number {
     fn from(value: u32) -> Self {
         Self(value)

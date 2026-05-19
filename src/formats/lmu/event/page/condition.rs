@@ -1,5 +1,5 @@
 use crate::{
-    helpers::{Array, Chunk, Number},
+    helpers::{Array, Chunk},
     lmu::LcfMapUnitReadError,
     raw::lmu::event::condition::EventPageConditionChunk,
 };
@@ -85,41 +85,41 @@ impl Condition {
             | u32::from(self.actor.0) << 4
             | u32::from(self.timer_1.0) << 5
             | u32::from(self.timer_2.0) << 6;
-        chunks.push(EventPageConditionChunk::Flags(Number(flags)));
+        chunks.push(EventPageConditionChunk::Flags(flags.into()));
 
         if self.switch_a.1 != 0 {
-            chunks.push(EventPageConditionChunk::SwitchA(Number(self.switch_a.1)));
+            chunks.push(EventPageConditionChunk::SwitchA(self.switch_a.1.into()));
         }
 
         if self.switch_b.1 != 0 {
-            chunks.push(EventPageConditionChunk::SwitchB(Number(self.switch_b.1)));
+            chunks.push(EventPageConditionChunk::SwitchB(self.switch_b.1.into()));
         }
 
         if self.variable.1 != 0 {
-            chunks.push(EventPageConditionChunk::Variable(Number(self.variable.1)));
+            chunks.push(EventPageConditionChunk::Variable(self.variable.1.into()));
         }
 
         if self.operator != 1 {
-            chunks.push(EventPageConditionChunk::Operator(Number(self.operator)));
+            chunks.push(EventPageConditionChunk::Operator(self.operator.into()));
         }
 
         if self.value != 0 {
-            chunks.push(EventPageConditionChunk::Value(Number(self.value)));
+            chunks.push(EventPageConditionChunk::Value(self.value.into()));
         }
 
         if self.item.1 != 0 {
-            chunks.push(EventPageConditionChunk::Item(Number(self.item.1)));
+            chunks.push(EventPageConditionChunk::Item(self.item.1.into()));
         }
 
         // this field defaults to 1 and is always pushed. r2k bug?
-        chunks.push(EventPageConditionChunk::Actor(Number(self.actor.1)));
+        chunks.push(EventPageConditionChunk::Actor(self.actor.1.into()));
 
         if self.timer_1.1 != 0 {
-            chunks.push(EventPageConditionChunk::Timer1(Number(self.timer_1.1)));
+            chunks.push(EventPageConditionChunk::Timer1(self.timer_1.1.into()));
         }
 
         if self.timer_2.1 != 0 {
-            chunks.push(EventPageConditionChunk::Timer2(Number(self.timer_2.1)));
+            chunks.push(EventPageConditionChunk::Timer2(self.timer_2.1.into()));
         }
 
         Array {

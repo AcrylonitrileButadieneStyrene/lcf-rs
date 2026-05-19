@@ -2,7 +2,7 @@ use binrw::BinWrite as _;
 
 use crate::{
     enums::Trigger,
-    helpers::{Array, Chunk, Number},
+    helpers::{Array, Chunk},
     ldb::LcfDataBaseReadError,
     raw::{
         ldb::common_event::CommonEventChunk,
@@ -63,17 +63,20 @@ impl CommonEvent {
         let mut chunks = Vec::new();
 
         chunks.push(CommonEventChunk::Name(self.name.clone()));
-        chunks.push(CommonEventChunk::Trigger(Number(self.trigger as u32)));
-        chunks.push(CommonEventChunk::CommandsSize(Number({
-            let mut buf = std::io::Cursor::new(Vec::new());
-            self.commands.write(&mut buf).unwrap();
-            buf.into_inner().len() as u32 + 4
-        })));
+        chunks.push(CommonEventChunk::Trigger((self.trigger as u32).into()));
+        chunks.push(CommonEventChunk::CommandsSize(
+            {
+                let mut buf = std::io::Cursor::new(Vec::new());
+                self.commands.write(&mut buf).unwrap();
+                buf.into_inner().len() as u32 + 4
+            }
+            .into(),
+        ));
         if self.state {
-            chunks.push(CommonEventChunk::SwitchState(Number(u32::from(self.state))));
+            chunks.push(CommonEventChunk::SwitchState(self.state.into()));
         }
         if self.switch != 0 {
-            chunks.push(CommonEventChunk::SwitchID(Number(self.switch)));
+            chunks.push(CommonEventChunk::SwitchID(self.switch.into()));
         }
         chunks.push(CommonEventChunk::Commands(Commands(self.commands.clone())));
 
