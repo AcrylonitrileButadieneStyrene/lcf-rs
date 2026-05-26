@@ -6,12 +6,14 @@ use crate::{
 pub mod actor;
 pub mod chipset;
 pub mod common_event;
+pub mod system;
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct LcfDataBase {
     pub actors: Vec<actor::Actor>,
     pub chipsets: Vec<chipset::ChipSet>,
     pub common_events: Vec<common_event::CommonEvent>,
+    pub system: system::System,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -63,7 +65,9 @@ impl TryFrom<RawLcfDataBase> for LcfDataBase {
                         .try_collect()?;
                 }
                 LcfDataBaseChunk::Terms(_) => (),
-                LcfDataBaseChunk::System(_) => (),
+                LcfDataBaseChunk::System(chunks) => {
+                    value.system = system::System::default().with_chunks(chunks)?
+                }
                 LcfDataBaseChunk::Switches(_) => (),
                 LcfDataBaseChunk::Variables(_) => (),
                 LcfDataBaseChunk::CommonEvents(items) => {

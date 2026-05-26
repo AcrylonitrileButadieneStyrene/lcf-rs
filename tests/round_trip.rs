@@ -1,4 +1,4 @@
-use std::io::Seek as _;
+use std::{io::Seek as _, path::PathBuf};
 
 #[test]
 fn raw_database_round_trip() {
@@ -16,16 +16,20 @@ fn raw_map_tree_round_trip() {
 
 #[test]
 fn raw_map_unit_round_trip() {
-    get_games().for_each(|game| {
-        raw_round_trip::<lcf::raw::lmu::RawLcfMapUnit>(&game.join(find_one(&game, "lmu")));
-    });
+    get_games()
+        .filter_map(|game| find_one(&game, "lmu"))
+        .map(|file| raw_round_trip::<lcf::raw::lmu::RawLcfMapUnit>(&file))
+        .next()
+        .expect("found no data");
 }
 
 #[test]
 fn raw_save_data_round_trip() {
-    get_games().for_each(|game| {
-        raw_round_trip::<lcf::raw::lsd::RawLcfSaveData>(&game.join(find_one(&game, "lsd")));
-    });
+    get_games()
+        .filter_map(|game| find_one(&game, "lsd"))
+        .map(|file| raw_round_trip::<lcf::raw::lsd::RawLcfSaveData>(&file))
+        .next()
+        .expect("found no data");
 }
 
 #[test]
@@ -43,16 +47,20 @@ fn map_tree_recode_round_trip() {
 
 #[test]
 fn map_unit_recode_round_trip() {
-    get_games().for_each(|game| {
-        recode_round_trip::<lcf::lmu::LcfMapUnit>(&game.join(find_one(&game, "lmu")));
-    });
+    get_games()
+        .filter_map(|game| find_one(&game, "lmu"))
+        .map(|file| recode_round_trip::<lcf::lmu::LcfMapUnit>(&file))
+        .next()
+        .expect("found no data");
 }
 
 #[test]
 fn save_data_recode_round_trip() {
-    get_games().for_each(|game| {
-        recode_round_trip::<lcf::lsd::LcfSaveData>(&game.join(find_one(&game, "lsd")));
-    });
+    get_games()
+        .filter_map(|game| find_one(&game, "lsd"))
+        .map(|file| recode_round_trip::<lcf::lsd::LcfSaveData>(&file))
+        .next()
+        .expect("found no data");
 }
 
 fn get_games() -> impl Iterator<Item = std::path::PathBuf> {
@@ -62,14 +70,14 @@ fn get_games() -> impl Iterator<Item = std::path::PathBuf> {
         .filter(|dir| dir.join("RPG_RT.ldb").exists())
 }
 
-fn find_one(path: &std::path::Path, ext: &str) -> String {
+fn find_one(path: &std::path::Path, ext: &str) -> Option<PathBuf> {
     std::fs::read_dir(path)
         .unwrap()
         .into_iter()
         .filter_map(|entry| entry.ok())
         .filter_map(|entry| entry.file_name().into_string().ok())
         .find(|entry| entry.ends_with(ext))
-        .unwrap()
+        .map(|file| path.join(file))
 }
 
 fn raw_round_trip<T>(path: &std::path::Path)

@@ -7,6 +7,7 @@ pub mod actor;
 pub mod chipset;
 pub mod common_event;
 pub mod switch;
+pub mod system;
 pub mod term;
 pub mod variable;
 
@@ -43,7 +44,7 @@ pub enum LcfDataBaseChunk {
     #[br(pre_assert(id == 21))]
     Terms(Array<RawChunk<Term>>),
     #[br(pre_assert(id == 22))]
-    System(Array<Chunk<UnknownChunk>>),
+    System(Array<Chunk<system::SystemChunk>>),
     #[br(pre_assert(id == 23))]
     Switches(Array2D<switch::SwitchChunk>),
     #[br(pre_assert(id == 24))]
