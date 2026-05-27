@@ -1,4 +1,7 @@
-use crate::helpers::Number;
+use crate::{
+    helpers::{Array, Chunk, Number},
+    raw::shared::MusicChunk,
+};
 
 #[binrw::binrw]
 #[derive(Clone, Debug)]
@@ -36,21 +39,21 @@ pub enum SystemChunk {
     #[br(pre_assert(id == 27))]
     MenuCommands(#[br(count = length / 2)] Vec<u16>),
     #[br(pre_assert(id == 31))]
-    TitleScreenMusic(#[br(count = length)] Vec<u8>),
+    TitleScreenMusic(Array<Chunk<MusicChunk>>),
     #[br(pre_assert(id == 32))]
-    BattleMusic(#[br(count = length)] Vec<u8>),
+    BattleMusic(Array<Chunk<MusicChunk>>),
     #[br(pre_assert(id == 33))]
-    BattleEndMusic(#[br(count = length)] Vec<u8>),
+    BattleEndMusic(Array<Chunk<MusicChunk>>),
     #[br(pre_assert(id == 34))]
-    InnMusic(#[br(count = length)] Vec<u8>),
+    InnMusic(Array<Chunk<MusicChunk>>),
     #[br(pre_assert(id == 35))]
-    BoatMusic(#[br(count = length)] Vec<u8>),
+    BoatMusic(Array<Chunk<MusicChunk>>),
     #[br(pre_assert(id == 36))]
-    ShipMusic(#[br(count = length)] Vec<u8>),
+    ShipMusic(Array<Chunk<MusicChunk>>),
     #[br(pre_assert(id == 37))]
-    AirshipMusic(#[br(count = length)] Vec<u8>),
+    AirshipMusic(Array<Chunk<MusicChunk>>),
     #[br(pre_assert(id == 38))]
-    GameOverMusic(#[br(count = length)] Vec<u8>),
+    GameOverMusic(Array<Chunk<MusicChunk>>),
     #[br(pre_assert(id == 41))]
     CursorSoundEffect(#[br(count = length)] Vec<u8>),
     #[br(pre_assert(id == 42))]

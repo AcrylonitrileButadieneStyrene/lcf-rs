@@ -5,6 +5,7 @@ pub mod lmt;
 pub mod lmu;
 pub mod lsd;
 pub mod raw;
+pub mod shared;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub enum Lcf {

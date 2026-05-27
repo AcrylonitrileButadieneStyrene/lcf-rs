@@ -4,10 +4,8 @@ use crate::{helpers::Number, raw::lmt::RawLcfMapTree};
 
 use serde::{Deserialize, Serialize};
 
-mod bgm;
 mod map;
 mod start;
-pub use bgm::BGM;
 pub use map::{Map, MapType, Setting};
 pub use start::{Position, Start};
 

@@ -2,6 +2,7 @@ pub mod ldb;
 pub mod lmt;
 pub mod lmu;
 pub mod lsd;
+pub mod shared;
 
 #[derive(Clone, Debug)]
 #[binrw::binrw]

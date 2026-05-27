@@ -1,6 +1,6 @@
 use crate::{
     helpers::{Array, Chunk, Number, ToChunkID},
-    raw::lmt::bgm::MapBGMChunk,
+    raw::shared::MusicChunk,
 };
 
 #[binrw::binrw]
@@ -30,7 +30,7 @@ pub enum MapChunk {
     #[br(pre_assert(id == 11))]
     BGM(Number),
     #[br(pre_assert(id == 12))]
-    BGMData(Array<Chunk<MapBGMChunk>>),
+    BGMData(Array<Chunk<MusicChunk>>),
     /// * 0: Inherit
     /// * 1: Set by map event
     /// * 2: Preset

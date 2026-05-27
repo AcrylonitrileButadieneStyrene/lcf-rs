@@ -4,7 +4,7 @@ use crate::helpers::{Number, ToChunkID};
 #[br(import(id: u32, length: u32))]
 #[derive(Clone, Debug)]
 #[brw(little)]
-pub enum MapBGMChunk {
+pub enum MusicChunk {
     #[br(pre_assert(id == 1))]
     FileName(#[br(count = length)] Vec<u8>),
     /// - Unit: milliseconds
@@ -36,7 +36,7 @@ pub enum MapBGMChunk {
     },
 }
 
-impl ToChunkID for MapBGMChunk {
+impl ToChunkID for MusicChunk {
     fn id(&self) -> u32 {
         match self {
             Self::FileName(_) => 1,

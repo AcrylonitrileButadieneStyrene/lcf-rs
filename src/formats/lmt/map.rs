@@ -2,8 +2,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     helpers::{Array, Chunk, Number},
-    lmt::{BGM, LcfMapTreeReadError},
-    raw::lmt::{bgm::MapBGMChunk, map::MapChunk},
+    lmt::LcfMapTreeReadError,
+    raw::lmt::map::MapChunk,
+    shared::Music,
 };
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -16,7 +17,7 @@ pub struct Map {
     pub vertical_scroll_bar: u32,
     pub expanded: bool,
     pub bgm: Setting,
-    pub bgm_data: BGM,
+    pub bgm_data: Music,
     pub background: Setting,
     pub background_file: Vec<u8>,
     pub teleport: Setting,
@@ -37,7 +38,7 @@ impl Default for Map {
             vertical_scroll_bar: 0,
             expanded: false,
             bgm: Setting::default(),
-            bgm_data: BGM::default(),
+            bgm_data: Music::default(),
             background: Setting::default(),
             background_file: Vec::new(),
             teleport: Setting::default(),
@@ -73,21 +74,9 @@ impl Map {
                 MapChunk::Expanded(val) => map.expanded = val.0 != 0,
                 MapChunk::BGM(val) => map.bgm = (val, "BGM", id).try_into()?,
                 MapChunk::BGMData(chunks) => {
-                    let mut bgm = BGM::default();
-                    for chunk in chunks.inner_vec {
-                        match chunk.data {
-                            MapBGMChunk::FileName(bytes) => bgm.file = bytes,
-                            MapBGMChunk::FadeInTime(val) => bgm.fade_in_time = val.0,
-                            MapBGMChunk::Volume(val) => bgm.volume = val.0,
-                            MapBGMChunk::Tempo(val) => bgm.tempo = val.0,
-                            MapBGMChunk::Balance(val) => bgm.balance = val.0,
-                            MapBGMChunk::Unknown { id, bytes } => {
-                                return Err(LcfMapTreeReadError::UnknownBGMData(id, bytes));
-                            }
-                        }
-                    }
-
-                    map.bgm_data = bgm;
+                    map.bgm_data = Music::default()
+                        .with_chunks(chunks)
+                        .map_err(|(id, bytes)| LcfMapTreeReadError::UnknownBGMData(id, bytes))?;
                 }
                 MapChunk::Background(val) => {
                     map.background = (val, "background", id).try_into()?;
